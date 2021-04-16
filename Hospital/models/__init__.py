@@ -1,0 +1,6 @@
+from .DoctorAppointmentData import DoctorAppointmentData
+from .HospitalData import HospitalData
+from .HospitalDoctorData import HospitalDoctorData
+from .HospitalDoctorScheduleData import HospitalDoctorScheduleData
+from .HospitalSpecializationData import HospitalSpecializationData
+from .WeekData import WeekData
