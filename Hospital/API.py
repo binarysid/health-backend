@@ -134,7 +134,7 @@ class API:
     @csrf_exempt
     def AddSpecializationToHospital(self,request):
         specializationID = request.POST.get('specialization_id',None)
-        specialization = request.POST.get('specialization_id',None)
+        specialization = request.POST.get('specialization',None)
         hospitalID = int(request.POST['hospital_id'])
         jsonData = Specialization.attachSpecializationToHospital(specializationID=specializationID,specializationName=specialization,hospitalID=hospitalID)
         return HttpResponse(json.dumps(jsonData), content_type="application/json")
