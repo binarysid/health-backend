@@ -27,7 +27,7 @@ def attachSpecializationToHospital(specializationID,specializationName, hospital
             hospital = HospitalData.objects.get(id=hospitalID)
             hosp_sp = HospitalSpecializationData(hospital=hospital,specialization=specialization)
             hosp_sp.save()
-            json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': "successful"}
+            json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': "successful", 'id':specialization.id}
         except IntegrityError as e:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
         except:
