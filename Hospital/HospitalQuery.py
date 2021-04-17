@@ -308,22 +308,6 @@ class HospitalQuery:
 
         return json_data
 
-    def attachSpecializationToHospital(self, specializationID, hospitalID):
-        json_data = {}
-        try:
-            hosp_sp = HospitalSpecializationData.objects.get(hospital_id=hospitalID,specialization_id=specializationID)
-            json_data = {'code': StatusCode.HTTP_403_FORBIDDEN.value, 'message': 'entry already exists'}
-        except ObjectDoesNotExist:
-            hospital = HospitalData.objects.get(id=hospitalID)
-            doctor = SpecializationData.objects.get(id=specializationID)
-            hosp_sp = HospitalSpecializationData(hospital_id=hospitalID,specialization_id=specializationID)
-            hosp_sp.save()
-            json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': "successful"}
-        except:
-            json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': "something went wrong"}
-
-        return json_data
-
     def updateDoctorInfoForHospital(self, doctorID, hospitalID,phone,visitFee,startTime,endTime,startDay,endDay,roomNo,maxPatientPerDay):
         json_data = {}
         try:

@@ -133,12 +133,10 @@ class API:
 
     @csrf_exempt
     def AddSpecializationToHospital(self,request):
-        try:
-            specializationID = int(request.POST['specialization_id'])
-            hospitalID = int(request.POST['hospital_id'])
-            jsonData = self.queryConnectionPool.attachSpecializationToHospital(specializationID=specializationID,hospitalID=hospitalID)
-        except IntegrityError as e:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
+        specializationID = request.POST.get('specialization_id',None)
+        specialization = request.POST.get('specialization_id',None)
+        hospitalID = int(request.POST['hospital_id'])
+        jsonData = Specialization.attachSpecializationToHospital(specializationID=specializationID,specializationName=specialization,hospitalID=hospitalID)
         return HttpResponse(json.dumps(jsonData), content_type="application/json")
 
     @csrf_exempt

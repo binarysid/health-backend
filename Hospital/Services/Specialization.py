@@ -2,7 +2,7 @@ from Doctor.models.SpecializationData import SpecializationData
 from HealthBackendProject.StatusCode import StatusCode
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection, IntegrityError
-from Hospital.models import HospitalSpecializationData
+from Hospital.models import HospitalSpecializationData, HospitalData
 from Hospital.Services import logger
 
 def addSpecialization(self, name) -> SpecializationData:
@@ -12,6 +12,29 @@ def addSpecialization(self, name) -> SpecializationData:
         return data
     except:
         return None
+
+def attachSpecializationToHospital(specializationID,specializationName, hospitalID):
+        json_data = {}
+        try:
+            hosp_sp = HospitalSpecializationData.objects.get(hospital_id=hospitalID,specialization_id=specializationID)
+            json_data = {'code': StatusCode.HTTP_403_FORBIDDEN.value, 'message': 'entry already exists'}
+        except ObjectDoesNotExist:
+            if specializationID is not None:
+                specializationID = int(specializationID)
+                specialization = SpecializationData.objects.get(id=specializationID)
+            else:
+                specialization = addSpecialization(name=specializationName)
+            hospital = HospitalData.objects.get(id=hospitalID)
+            hosp_sp = HospitalSpecializationData(hospital=hospital,specialization=specialization)
+            hosp_sp.save()
+            json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': "successful"}
+        except IntegrityError as e:
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
+        except:
+            json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': "something went wrong"}
+
+        return json_data
+
 
 def createSpecialization(self, name):
     json_data = {}
