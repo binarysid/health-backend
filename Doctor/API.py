@@ -31,10 +31,7 @@ class API:
         hospitalID = request.POST.get('hospital_id',None)
         if hospitalID is not None:
             hospitalID = int(hospitalID)
-        if hospitalID is not None and doctorName is not None:
-            jsonData = self.queryConnectionPool.getAllDoctorsByName(hospitalID=hospitalID, doctorName=doctorName)
-        else:
-            jsonData = self.queryConnectionPool.getAllDoctorsBy(hospitalID=hospitalID,specializationID=specializationID)
+        jsonData = self.queryConnectionPool.getAllDoctorsBy(hospitalID=hospitalID,specializationID=specializationID)
         return HttpResponse(json.dumps(jsonData), content_type="application/json")
 
     @csrf_exempt

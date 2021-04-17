@@ -53,21 +53,6 @@ class DoctorsQuery:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
         return json_data
 
-    def getAllDoctorsByName(self, hospitalID, doctorName):
-        json_data = {}
-        try:
-            doctors = []
-            filteredDoctor = HospitalDoctorData.objects.filter(hospital_id=hospitalID)
-            for doctor in filteredDoctor:
-                data = DoctorData.objects.get(name=doctorName)
-                doctors.append(self.getDoctorObj(data))
-            json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'success', 'data': doctors}
-        except ObjectDoesNotExist:
-            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'no doctor found'}
-        except:
-            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
-        return json_data
-
     def infoUpdate(self,name, doctorID, password, email, nid, address,specializationID,degrees):
         json_data = {}
         try:
