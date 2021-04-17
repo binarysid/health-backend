@@ -22,6 +22,15 @@ class API:
         return logger
 
     @csrf_exempt
+    def CancelAppointment(self,request):
+        # version = request.headers['version']
+        doctorID = int(request.POST['doctor_id'])
+        hospitalID = int(request.POST['hospital_id'])
+        date = request.POST.get('date', None)
+        jsonData = self.queryConnectionPool.cancelDoctorAppointment(hospitalID=hospitalID,doctorID=doctorID,date=date)
+        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+
+    @csrf_exempt
     def Login(self,request):
         # version = request.headers['version']
         phone = request.POST.get('phone', None)

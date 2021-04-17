@@ -1,4 +1,5 @@
 from enum import Enum
+
 class StatusCode(Enum):
     HTTP_200_OK = 200
     HTTP_201_CREATED = 201

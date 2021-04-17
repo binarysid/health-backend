@@ -1,6 +1,7 @@
 from django.db import models
 from Doctor.models.DoctorData import DoctorData
 from .HospitalData import HospitalData
+from HealthBackendProject.AppointmentStatus import AppointmentStatus
 
 class DoctorAppointmentData(models.Model):
     id = models.AutoField(primary_key=True)
@@ -12,6 +13,7 @@ class DoctorAppointmentData(models.Model):
     patient_name = models.CharField(max_length=255)
     patient_phone = models.CharField(max_length=255)
     patient_id = models.IntegerField(blank=True, null=True)
+    status = models.IntegerField(default=1)
 
     class Meta:
         # managed = False

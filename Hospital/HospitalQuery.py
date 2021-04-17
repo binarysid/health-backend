@@ -12,6 +12,7 @@ from .models.HospitalDoctorData import HospitalDoctorData
 from .models.HospitalDoctorScheduleData import HospitalDoctorScheduleData
 from .models.WeekData import WeekData
 from .models.DoctorAppointmentData import DoctorAppointmentData
+from HealthBackendProject.AppointmentStatus import AppointmentStatus
 
 class HospitalQuery:
     timeFormat = '%H:%M'
@@ -20,6 +21,22 @@ class HospitalQuery:
 
     def __init__(self, logger):
         self.logger = logger
+
+    def cancelDoctorAppointment(self, doctorID, hospitalID, date):
+        json_data = {}
+        try:
+            data = DoctorAppointmentData.objects.filter(hospital_id=hospitalID,doctor_id=doctorID,
+                                                        visit_date=datetime.strptime(date, self.dateFormate).date())
+            for appointment in data:
+                appointment.status = AppointmentStatus.CANCELLED.value
+                appointment.save()
+            json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'selected appointments cancelled'}
+        except ObjectDoesNotExist:
+            json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'no appointment found'}
+        except:
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+
+        return json_data
 
     def executeDoctorAppointment(self, doctorID, hospitalID, visitTime, visitDate,patientName,patientPhone,patientID):
         json_data = {}
@@ -58,9 +75,9 @@ class HospitalQuery:
             appointments = []
             if date is not None:
                 data = DoctorAppointmentData.objects.filter(hospital_id=hospitalID, doctor_id=doctorID,
-                                                                   visit_date=date).order_by("serial_no")
+                                                                   visit_date=date).exclude(status=AppointmentStatus.CANCELLED.value).order_by("visit_date")
             else:
-                data = DoctorAppointmentData.objects.filter(hospital_id=hospitalID, doctor_id=doctorID).order_by("visit_date")
+                data = DoctorAppointmentData.objects.filter(hospital_id=hospitalID, doctor_id=doctorID).exclude(status=AppointmentStatus.CANCELLED.value).order_by("visit_date")
             arrayLength = len(data)
             if arrayLength>0:
                 selectedDate = data[0].visit_date

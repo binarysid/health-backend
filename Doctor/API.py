@@ -24,13 +24,17 @@ class API:
     @csrf_exempt
     def DoctorList(self,request):
         specializationID = request.POST.get('specialization_id',None)
+        doctorName = request.POST.get('doctor_name', None)
         if specializationID is not None:
             specializationID = int(specializationID)
         specialization = request.POST.get('specialization',None)
         hospitalID = request.POST.get('hospital_id',None)
         if hospitalID is not None:
             hospitalID = int(hospitalID)
-        jsonData = self.queryConnectionPool.getAllDoctorsBy(hospitalID,specializationID)
+        if hospitalID is not None and doctorName is not None:
+            jsonData = self.queryConnectionPool.getAllDoctorsByName(hospitalID=hospitalID, doctorName=doctorName)
+        else:
+            jsonData = self.queryConnectionPool.getAllDoctorsBy(hospitalID=hospitalID,specializationID=specializationID)
         return HttpResponse(json.dumps(jsonData), content_type="application/json")
 
     @csrf_exempt
