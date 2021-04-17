@@ -7,6 +7,8 @@ class HospitalData(models.Model):
     password = models.CharField(max_length=255)
     license_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
     phone = models.CharField(unique=True, max_length=255)
+    lat = models.FloatField(unique=True, max_length=255, blank=True, null=True)
+    lng = models.FloatField(unique=True, max_length=255, blank=True, null=True)
 
     class Meta:
         # managed = False
