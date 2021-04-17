@@ -6,20 +6,13 @@ from django.views.decorators.csrf import csrf_exempt
 from HealthBackendProject.StatusCode import StatusCode
 from .APIKey import ApiKey
 import logging
+from .Services import Specialization
+from HealthBackendProject import LogHandler
 
 class API:
     def __init__(self):
-        self.logger = self.getLogHandler()
+        self.logger = LogHandler.getLogHandler(filename='hospital.log')
         self.queryConnectionPool = HospitalQuery(logger=self.logger)
-
-    def getLogHandler(self):
-        logger = logging.getLogger(__name__)
-        logger.setLevel(logging.DEBUG)
-        formatter = logging.Formatter('[%(asctime)s]: %(levelname)s: %(name)s: %(funcName)s: %(filename)s: line no- %(lineno)s : %(message)s')
-        fileHandler = logging.FileHandler('hospital.log')
-        fileHandler.setFormatter(formatter)
-        logger.addHandler(fileHandler)
-        return logger
 
     @csrf_exempt
     def CancelAppointment(self,request):
@@ -82,13 +75,12 @@ class API:
 
     @csrf_exempt
     def SpecializationList(self,request):
-        try:
-            hospitalID = int(request.POST['hospital_id'])
-            jsonData = self.queryConnectionPool.getSpecializationListBy(hospitalID)
-        except IntegrityError as e:
-            jsonData = {'code':StatusCode.HTTP_400_BAD_REQUEST.value, 'message':e.args[1]}
-        except:
-            jsonData = self.queryConnectionPool.getSpecializationList()
+        hospitalID = request.POST.get('hospital_id',None)
+        if hospitalID is not None:
+            hospitalID = int(hospitalID)
+            jsonData = Specialization.getSpecializationListBy(hospitalID)
+        else:
+            jsonData = Specialization.getSpecializationList()
         return HttpResponse(json.dumps(jsonData), content_type="application/json")
 
     @csrf_exempt
@@ -108,11 +100,8 @@ class API:
 
     @csrf_exempt
     def CreateSpecialization(self,request):
-        try:
-            name = request.POST['name']
-            jsonData = self.queryConnectionPool.createSpecialization(name)
-        except IntegrityError as e:
-            jsonData = {'code':StatusCode.HTTP_400_BAD_REQUEST.value, 'message':e.args[1]}
+        name = request.POST['name']
+        jsonData = Specialization.createSpecialization(name=name)
         return HttpResponse(json.dumps(jsonData), content_type="application/json")
 
     @csrf_exempt

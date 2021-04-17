@@ -79,7 +79,13 @@ class DoctorsQuery:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
         return json_data
 
-    def register(self, name, phone, password, regNo, hospitalID,specializationID,specialization):
+    def getSpecializationObj(self,id):
+        try:
+            return SpecializationData.objects.get(id=id)
+        except:
+            return None
+
+    def register(self, name, phone, password, regNo, hospitalID,specializationID):
         json_data = {}
         hospitalAPI = HospitalQuery(self.logger)
         try:
@@ -87,16 +93,10 @@ class DoctorsQuery:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, "message": 'account with this reg_no or phone already exists'}
         except ObjectDoesNotExist:
             passwd = HashPassword.createPassword(password)
-            data = DoctorData(name=name,reg_no=regNo,password=passwd,phone=phone)
-            if specializationID is not None:
-                data.specialization = specializationID
-            elif specialization is not None:
-                spObj = hospitalAPI.addSpecialization(name=specialization)
-                if spObj is not None:
-                    data.specialization = spObj.id
+            data = DoctorData(name=name,reg_no=regNo,password=passwd,phone=phone,specialization=self.getSpecializationObj(specializationID))
             data.save()
             if hospitalID is not None:
-                response = self.addDoctorToHospital(hospitalID=hospitalID,doctorID=data.id,specializationID=data.specialization,hospitalAPIObj=hospitalAPI)
+                response = self.addDoctorToHospital(hospitalID=hospitalID,doctorID=data.id,hospitalAPIObj=hospitalAPI)
                 if response['code'] == StatusCode.HTTP_200_OK.value: # if this api is requested with hospitalID, then it should be from hospital app. so the message should be whether it's successfully attached the doctor to hospital
                     json_data = response
                     json_data["id"] = data.id
@@ -106,12 +106,10 @@ class DoctorsQuery:
                 json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id,'message':'successfully registered'}
         return json_data
 
-    def addDoctorToHospital(self,hospitalID,doctorID,specializationID,hospitalAPIObj):
+    def addDoctorToHospital(self,hospitalID,doctorID,hospitalAPIObj):
         json_data = {}
         try:
             json_data = hospitalAPIObj.doctorEntryOnHospitalList(doctorID=doctorID, hospitalID=hospitalID)
-            if json_data['code'] == StatusCode.HTTP_200_OK.value:
-                hospitalAPIObj.attachSpecializationToHospital(specializationID, hospitalID)
         except:
             json_data = {'code':StatusCode.HTTP_404_NOT_FOUND.value,'message':'unable to add doctor to hospital'}
         return json_data

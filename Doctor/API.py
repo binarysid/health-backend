@@ -69,8 +69,7 @@ class API:
             specializationID = int(specializationID)
         if hospitalID is not None:
             hospitalID = int(hospitalID)
-        specialization = request.POST.get('specialization', None)
-        jsonData = self.queryConnectionPool.register(name, phone, password, registrationNo, hospitalID,specializationID=specializationID,specialization=specialization)
+        jsonData = self.queryConnectionPool.register(name, phone, password, registrationNo, hospitalID,specializationID=specializationID)
         return HttpResponse(json.dumps(jsonData), content_type="application/json")
 
     @csrf_exempt
