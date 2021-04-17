@@ -5,7 +5,7 @@ from django.db import connection, IntegrityError
 from Hospital.models import HospitalSpecializationData, HospitalData
 from Hospital.Services import logger
 
-def addSpecialization(self, name) -> SpecializationData:
+def addSpecialization(name) -> SpecializationData:
     try:
         data = SpecializationData(specialization=name)
         data.save()
@@ -36,7 +36,7 @@ def attachSpecializationToHospital(specializationID,specializationName, hospital
         return json_data
 
 
-def createSpecialization(self, name):
+def createSpecialization(name):
     json_data = {}
     try:
         data = SpecializationData.objects.get(specialization=name)
@@ -52,7 +52,7 @@ def createSpecialization(self, name):
         json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'somehting went wrong'}
     return json_data
 
-def getSpecializationListBy(self, hospitalID):
+def getSpecializationListBy(hospitalID):
     json_data = {}
     try:
         hospSpecialization = HospitalSpecializationData.objects.filter(hospital_id=hospitalID)
