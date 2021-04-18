@@ -41,7 +41,8 @@ class DoctorsQuery:
                     self.logger.debug('filter loop')
                     data = DoctorData.objects.get(id=doctor.doctor_id)
                     if specializationID is not None:
-                        self.logger.debug('specialization not none')
+                        self.logger.debug(f'specialization not none ${specializationID}')
+                        self.logger.debug(f'data specialization ${data.specialization.id}')
                         if data.specialization.id == specializationID:
                             self.logger.debug('specialization matches')
                             doctors.append(self.getDoctorObj(data))
