@@ -36,22 +36,14 @@ class DoctorsQuery:
             self.logger.debug('entered try')
             if hospitalID != None:
                 filteredDoctor = HospitalDoctorData.objects.filter(hospital_id=hospitalID)
-                self.logger.debug('doctor filtered')
+                # self.logger.debug('doctor filtered')
                 for doctor in filteredDoctor:
-                    self.logger.debug('filter loop')
-                    data = DoctorData.objects.get(id=doctor.doctor_id)
+                    # self.logger.debug('filter loop')
                     if specializationID is not None:
-                        self.logger.debug(f'specialization not none ${specializationID}')
-                        self.logger.debug(f'hospital id {hospitalID}')
-                        self.logger.debug(f'doctor id {data.id}')
-                        self.logger.debug(f'fake data specialization ${data.specialization_id}')
-                        self.logger.debug(f'data specialization ${data.specialization.id}')
-                        if data.specialization.id == specializationID:
-                            self.logger.debug('specialization matches')
-                            doctors.append(self.getDoctorObj(data))
-                            self.logger.debug('doctor data appended')
+                        data = DoctorData.objects.get(id=doctor.doctor_id,specialization_id=specializationID)
                     else:
-                        doctors.append(self.getDoctorObj(data))
+                        data = DoctorData.objects.get(id=doctor.doctor_id)
+                    doctors.append(self.getDoctorObj(data))
             else:
                 data = DoctorData.objects.all()
                 for doctor in data:
