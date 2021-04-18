@@ -33,13 +33,19 @@ class DoctorsQuery:
         json_data = {}
         try:
             doctors = []
+            self.logger.debug('entered try')
             if hospitalID != None:
                 filteredDoctor = HospitalDoctorData.objects.filter(hospital_id=hospitalID)
+                self.logger.debug('doctor filtered')
                 for doctor in filteredDoctor:
+                    self.logger.debug('filter loop')
                     data = DoctorData.objects.get(id=doctor.doctor_id)
                     if specializationID is not None:
+                        self.logger.debug('specialization not none')
                         if data.specialization.id == specializationID:
+                            self.logger.debug('specialization matches')
                             doctors.append(self.getDoctorObj(data))
+                            self.logger.debug('doctor data appended')
                     else:
                         doctors.append(self.getDoctorObj(data))
             else:
