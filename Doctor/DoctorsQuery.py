@@ -38,12 +38,12 @@ class DoctorsQuery:
                 filteredDoctor = HospitalDoctorData.objects.filter(hospital_id=hospitalID)
                 # self.logger.debug('doctor filtered')
                 for doctor in filteredDoctor:
-                    #
                     if specializationID is not None:
-                        self.logger.debug('sp not none')
-                        sp_data = SpecializationData.objects.get(id=specializationID)
-                        self.logger.debug(f'sp id {sp_data.id}')
-                        data = DoctorData.objects.get(id=doctor.doctor_id,specialization=sp_data)
+                        # self.logger.debug('sp not none')
+                        # self.logger.debug(f'sp id {sp_data.id}')
+                        data = self.getDoctorBySpecialization(doctorID=doctor.doctor_id,specializationID=specializationID)
+                        if data is None:
+                            continue
                     else:
                         data = DoctorData.objects.get(id=doctor.doctor_id)
                     doctors.append(self.getDoctorObj(data))
@@ -57,6 +57,12 @@ class DoctorsQuery:
         except:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
         return json_data
+
+    def getDoctorBySpecialization(self,doctorID,specializationID):
+        try:
+            return DoctorData.objects.get(id=doctorID,specialization_id=specializationID)
+        except:
+            return None
 
     def infoUpdate(self,name, doctorID, password, email, nid, address,specializationID,degrees):
         json_data = {}
