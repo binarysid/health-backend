@@ -42,6 +42,9 @@ class DoctorsQuery:
                     data = DoctorData.objects.get(id=doctor.doctor_id)
                     if specializationID is not None:
                         self.logger.debug(f'specialization not none ${specializationID}')
+                        self.logger.debug(f'hospital id {hospitalID}')
+                        self.logger.debug(f'doctor id {data.id}')
+                        self.logger.debug(f'fake data specialization ${data.specialization_id}')
                         self.logger.debug(f'data specialization ${data.specialization.id}')
                         if data.specialization.id == specializationID:
                             self.logger.debug('specialization matches')
