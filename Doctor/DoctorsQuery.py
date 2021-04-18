@@ -38,9 +38,12 @@ class DoctorsQuery:
                 filteredDoctor = HospitalDoctorData.objects.filter(hospital_id=hospitalID)
                 # self.logger.debug('doctor filtered')
                 for doctor in filteredDoctor:
-                    # self.logger.debug('filter loop')
+                    #
                     if specializationID is not None:
-                        data = DoctorData.objects.get(id=doctor.doctor_id,specialization_id=specializationID)
+                        self.logger.debug('sp not none')
+                        sp_data = SpecializationData.objects.get(id=specializationID)
+                        self.logger.debug(f'sp id {sp_data.id}')
+                        data = DoctorData.objects.get(id=doctor.doctor_id,specialization=sp_data)
                     else:
                         data = DoctorData.objects.get(id=doctor.doctor_id)
                     doctors.append(self.getDoctorObj(data))
