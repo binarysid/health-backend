@@ -12,10 +12,11 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import os
 from .DBCredentials import DBCredentials
+from django.core.files.storage import FileSystemStorage
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+# upload_storage = FileSystemStorage(location='../db_backup', base_url='/uploads')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -126,7 +127,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-
+MEDIA_BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+MEDIA_ROOT = os.path.join(MEDIA_BASE_DIR, 'health_project_media_files/')
+MEDIA_URL = '/health_project_media_files/'
 STATIC_URL = '/static/'
 
 # Default primary key field type

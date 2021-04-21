@@ -8,7 +8,7 @@ from .APIKey import ApiKey
 import logging
 from .Services import Specialization
 from HealthBackendProject import LogHandler
-
+from .Services import HospitalService
 class API:
     def __init__(self):
         self.logger = LogHandler.getLogHandler(filename='hospital.log')
@@ -84,13 +84,21 @@ class API:
         return HttpResponse(json.dumps(jsonData), content_type="application/json")
 
     @csrf_exempt
+    def InfoUpdate(self, request):
+        id = int(request.POST['id'])
+        logo = request.POST.get('logo', None)
+        json_data = HospitalService.editHospitalInfo(id=id,logo=logo)
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
+
+    @csrf_exempt
     def HospitalRegistration(self,request):
         try:
             name = request.POST['name']
             phone = request.POST['phone']
             password = request.POST['password']
             licenseNo = request.POST['license_no']
-            jsonData = self.queryConnectionPool.executeRegister(name, phone, password, licenseNo)
+            logo = request.POST.get('logo',None)
+            jsonData = self.queryConnectionPool.executeRegister(name, phone, password, licenseNo,logo=logo)
         except IntegrityError as e:
             self.logger.debug(e.args[1])
             jsonData = {'code':StatusCode.HTTP_400_BAD_REQUEST.value, 'message':e.args[1]}

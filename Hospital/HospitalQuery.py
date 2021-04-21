@@ -13,7 +13,7 @@ from .models.HospitalDoctorScheduleData import HospitalDoctorScheduleData
 from .models.WeekData import WeekData
 from .models.DoctorAppointmentData import DoctorAppointmentData
 from HealthBackendProject.AppointmentStatus import AppointmentStatus
-
+from .Services import HospitalService
 
 class HospitalQuery:
     timeFormat = '%H:%M'
@@ -348,7 +348,7 @@ class HospitalQuery:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
         return json_data
 
-    def executeRegister(self,name,phone,password,licenseNo):
+    def executeRegister(self,name,phone,password,licenseNo,logo):
         json_data = {}
         try:
             data = HospitalData.objects.get(license_no=licenseNo, phone=phone)
@@ -357,6 +357,8 @@ class HospitalQuery:
         except ObjectDoesNotExist:
             passwd = HashPassword.createPassword(password)
             data = HospitalData(name=name, password=passwd,license_no=licenseNo, phone=phone)
+            if logo is not None:
+                HospitalService.getProfileLogo(url=logo, data=data)
             data.save()
             json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id}
         except:
