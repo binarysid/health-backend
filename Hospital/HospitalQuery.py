@@ -340,7 +340,7 @@ class HospitalQuery:
             hospitals = []
             for item in data:
                 hospitals.append(dict(name=item.name, phone=item.phone,
-                                      id=item.id, address=item.address))
+                                      id=item.id, address=item.address,icon=item.logo.path if item.logo else ''))
             return {'code': StatusCode.HTTP_200_OK.value, 'message': 'success', 'data': hospitals}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'no hospital found'}
@@ -411,7 +411,7 @@ class HospitalQuery:
             data = HospitalData.objects.get(phone=phone)
             json_data = {}
             if HashPassword.isValidPassword(password, data.password):
-                json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id, 'name': data.name}
+                json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id, 'name': data.name,'icon':data.logo.path if data.logo else ''}
             else:
                 json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, "message": 'password doesnt match'}
         except ObjectDoesNotExist:

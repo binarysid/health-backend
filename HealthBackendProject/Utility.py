@@ -1,7 +1,13 @@
 from PIL import Image
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
-import base64, secrets, io
+import base64, secrets, io, os
+
+def removeFile(path):
+    try:
+        os.remove(path=path)
+    except:
+        print('error')
 
 def convertBase64ToImageFile(url, id):
     imgdata = base64.b64decode(url)

@@ -10,6 +10,8 @@ def editHospitalInfo(id,logo):
     try:
         data = HospitalData.objects.get(id=id)
         if logo is not None:
+            if data.logo is not None:
+                Utility.removeFile(data.logo.path)
             data.logo = Utility.convertBase64ToImageFile(logo, id=id)
         data.save()
         json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'info updated'}
@@ -18,3 +20,4 @@ def editHospitalInfo(id,logo):
     except:
         json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'no account found'}
     return json_data
+
