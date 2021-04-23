@@ -14,8 +14,8 @@ def editHospitalInfo(id,logo):
         data = HospitalData.objects.get(id=id)
         logger.debug(f'hospital data found with id: {id}')
         if logo is not None:
-            logger.debug(f'logo not null')
-            if data.logo is not None:
+            logger.debug(f'logo not null {data.logo}')
+            if data.logo:
                 logger.debug(f'data logo not null')
                 Utility.removeFile(data.logo.path)
             data.logo = Utility.convertBase64ToImageFile(logo, id=id)
