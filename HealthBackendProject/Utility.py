@@ -3,6 +3,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 import base64, secrets, io, os
 from HealthBackendProject import LogHandler
+
 logger = LogHandler.getLogHandler(filename='hospital.log')
 
 def removeFile(path):

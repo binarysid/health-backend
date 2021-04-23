@@ -1,7 +1,8 @@
 import os
 
-MEDIA_BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-MEDIA_ROOT = os.path.join(MEDIA_BASE_DIR, 'health_project_media_files/')
+DIR = 'media/'
+MEDIA_BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MEDIA_ROOT = os.path.join(MEDIA_BASE_DIR, DIR)
 
 DOCTOR_ROOT = "doctor/"
 HOSPITAL_ROOT = "hospital/"

@@ -28,13 +28,14 @@ class API:
         # version = request.headers['version']
         phone = request.POST.get('phone', None)
         password = request.POST.get('password', None)
-        jsonData = self.queryConnectionPool.login(phone, password)
+        jsonData = self.queryConnectionPool.login(request=request,phone=phone, password=password)
         return HttpResponse(json.dumps(jsonData), content_type="application/json")
 
     @csrf_exempt
     def HospitalList(self,request):
+        # print()
         try:
-            jsonData = self.queryConnectionPool.getHospitalList()
+            jsonData = self.queryConnectionPool.getHospitalList(request=request)
         except IntegrityError as e:
             jsonData = {'code':StatusCode.HTTP_400_BAD_REQUEST.value, 'message':e.args[1]}
         return HttpResponse(json.dumps(jsonData), content_type="application/json")

@@ -2,6 +2,7 @@ from django.urls import path, include
 from . import views
 from .API import API
 
+
 api = API()
 urlpatterns = [
         path('api/infoupdate', api.InfoUpdate, name=''),

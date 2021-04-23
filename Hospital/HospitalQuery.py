@@ -15,6 +15,7 @@ from .models.DoctorAppointmentData import DoctorAppointmentData
 from HealthBackendProject.AppointmentStatus import AppointmentStatus
 from .Services import HospitalService
 
+
 class HospitalQuery:
     timeFormat = '%H:%M'
     timeFormatAmPm = '%H:%M %p'
@@ -334,13 +335,14 @@ class HospitalQuery:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value,'message':'no data found'}
         return json_data
 
-    def getHospitalList(self):
+    def getHospitalList(self,request):
         try:
             data = HospitalData.objects.all()
             hospitals = []
+
             for item in data:
                 hospitals.append(dict(name=item.name, phone=item.phone,
-                                      id=item.id, address=item.address,icon=item.logo.path if item.logo else ''))
+                                      id=item.id, address=item.address,icon= request.build_absolute_uri(item.logo.url) if item.logo else ''))
             return {'code': StatusCode.HTTP_200_OK.value, 'message': 'success', 'data': hospitals}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'no hospital found'}
@@ -405,13 +407,13 @@ class HospitalQuery:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': "no doctor found"}
         return json_data
 
-    def login(self, phone, password):
+    def login(self,request, phone, password):
         json_data = {}
         try:
             data = HospitalData.objects.get(phone=phone)
             json_data = {}
             if HashPassword.isValidPassword(password, data.password):
-                json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id, 'name': data.name,'icon':data.logo.path if data.logo else ''}
+                json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id, 'name': data.name,'icon':request.build_absolute_uri(data.logo.url) if data.logo else ''}
             else:
                 json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, "message": 'password doesnt match'}
         except ObjectDoesNotExist:
