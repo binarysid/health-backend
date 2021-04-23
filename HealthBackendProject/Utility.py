@@ -2,17 +2,24 @@ from PIL import Image
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 import base64, secrets, io, os
+from HealthBackendProject import LogHandler
+logger = LogHandler.getLogHandler(filename='hospital.log')
 
 def removeFile(path):
+    logger.debug('path remove start')
     try:
         os.remove(path=path)
+        logger.debug('path removed success')
     except:
+        logger.debug('log exception')
         print('error')
 
 def convertBase64ToImageFile(url, id):
+    logger.debug(f'id: {id}, url: {url}')
     imgdata = base64.b64decode(url)
     filename = f'{id}.jpg'
     file = ContentFile(imgdata, name=filename)
+    logger.debug(f'file: {file}')
     return file
 
 def get_image_from_data_url( data_url, resize=True, base_width=1365 ):

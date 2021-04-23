@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from .DBCredentials import DBCredentials
 from django.core.files.storage import FileSystemStorage
-from HealthBackendProject import LogHandler
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,7 +31,6 @@ DEBUG = True
 TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = ['*']
-logger = LogHandler.getLogHandler(filename='hospital.log')
 
 # Application definition
 
@@ -133,7 +132,7 @@ MEDIA_BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath
 MEDIA_ROOT = os.path.join(MEDIA_BASE_DIR, 'health_project_media_files/')
 MEDIA_URL = '/health_project_media_files/'
 STATIC_URL = '/static/'
-logger.debug(f'{MEDIA_ROOT}')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
