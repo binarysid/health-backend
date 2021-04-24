@@ -4,8 +4,7 @@ from HealthBackendProject.StatusCode import StatusCode
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection, IntegrityError
 from HealthBackendProject import Utility
-from HealthBackendProject import LogHandler
-logger = LogHandler.getLogHandler(filename='hospital.log')
+
 
 def editHospitalInfo(id,logo):
     json_data = {}

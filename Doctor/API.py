@@ -31,7 +31,7 @@ class API:
         hospitalID = request.POST.get('hospital_id',None)
         if hospitalID is not None:
             hospitalID = int(hospitalID)
-        jsonData = self.queryConnectionPool.getAllDoctorsBy(hospitalID=hospitalID,specializationID=specializationID)
+        jsonData = self.queryConnectionPool.getAllDoctorsBy(hospitalID=hospitalID,specializationID=specializationID,request=request)
         return HttpResponse(json.dumps(jsonData), content_type="application/json")
 
     @csrf_exempt
@@ -52,8 +52,11 @@ class API:
         degrees = request.POST.get('degrees', None)
         specializationID = request.POST.get('specialization_id', None)
         specializationID = None if specializationID == None else int(specializationID)
-        jsonData = self.queryConnectionPool.infoUpdate(name, doctorID, password, email, nid, address,
-                                                              specializationID,degrees)
+        photo = request.POST.get('photo', None)
+        jsonData = self.queryConnectionPool.infoUpdate(name=name, doctorID=doctorID, password=password, email=email,
+                                                       nid=nid, address=address,
+                                                        specializationID=specializationID,
+                                                       degrees=degrees,photo=photo)
         return HttpResponse(json.dumps(jsonData), content_type="application/json")
 
     @csrf_exempt
@@ -76,7 +79,7 @@ class API:
     def DoctorLogin(self,request):
         phone = request.POST.get('phone', None)
         password = request.POST.get('password', None)
-        jsonData = self.queryConnectionPool.login(phone, password)
+        jsonData = self.queryConnectionPool.login(phone=phone, password=password,request=request)
         return HttpResponse(json.dumps(jsonData), content_type="application/json")
 
     @csrf_exempt

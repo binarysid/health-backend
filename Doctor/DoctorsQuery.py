@@ -10,15 +10,18 @@ from .models.SpecializationData import SpecializationData
 from django.core.exceptions import ObjectDoesNotExist
 from Hospital.models.HospitalDoctorData import HospitalDoctorData
 from Hospital.HospitalQuery import HospitalQuery
+from HealthBackendProject import Utility
 
 class DoctorsQuery:
 
     def __init__(self,logger):
         self.logger = logger
 
-    def getDoctorObj(self,data):
+    def getDoctorObj(self,data,request):
         responseObj = dict(name=data.name, phone=data.phone,
                                id=data.id)
+        if data.photo:
+            responseObj['photo'] = request.build_absolute_uri(data.photo.url)
         if data.address:
             responseObj['address'] = data.address
         responseObj['degrees'] = data.degrees if data.degrees is not None else ''
@@ -29,28 +32,25 @@ class DoctorsQuery:
             responseObj['specialization'] = ''
         return responseObj
 
-    def getAllDoctorsBy(self, hospitalID, specializationID):
+    def getAllDoctorsBy(self, hospitalID, specializationID,request):
         json_data = {}
         try:
             doctors = []
             self.logger.debug('entered try')
             if hospitalID != None:
                 filteredDoctor = HospitalDoctorData.objects.filter(hospital_id=hospitalID)
-                # self.logger.debug('doctor filtered')
                 for doctor in filteredDoctor:
                     if specializationID is not None:
-                        # self.logger.debug('sp not none')
-                        # self.logger.debug(f'sp id {sp_data.id}')
                         data = self.getDoctorBySpecialization(doctorID=doctor.doctor_id,specializationID=specializationID)
                         if data is None:
                             continue
                     else:
                         data = DoctorData.objects.get(id=doctor.doctor_id)
-                    doctors.append(self.getDoctorObj(data))
+                    doctors.append(self.getDoctorObj(data,request))
             else:
                 data = DoctorData.objects.all()
                 for doctor in data:
-                    doctors.append(self.getDoctorObj(doctor))
+                    doctors.append(self.getDoctorObj(doctor,request))
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'success', 'data': doctors}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'no doctor found'}
@@ -64,10 +64,15 @@ class DoctorsQuery:
         except:
             return None
 
-    def infoUpdate(self,name, doctorID, password, email, nid, address,specializationID,degrees):
+    def infoUpdate(self,name, doctorID, password, email,
+                   nid, address,specializationID,degrees,photo):
         json_data = {}
         try:
             data = DoctorData.objects.get(id=doctorID)
+            if photo is not None:
+                if data.photo:
+                    Utility.removeFile(data.photo.path)
+                data.photo = Utility.convertBase64ToImageFile(photo, id=doctorID)
             if name != None:
                 data.name = name
             if password != None:
@@ -125,13 +130,13 @@ class DoctorsQuery:
             json_data = {'code':StatusCode.HTTP_404_NOT_FOUND.value,'message':'unable to add doctor to hospital'}
         return json_data
 
-    def login(self, phone, password):
+    def login(self, phone, password,request):
         json_data = {}
         try:
             data = DoctorData.objects.get(phone=phone)
             json_data = {}
             if HashPassword.isValidPassword(password, data.password):
-                json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id, 'name': data.name}
+                json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id, 'name': data.name,'photo':request.build_absolute_uri(data.photo.url) if data.photo else ''}
             else:
                 json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, "message": 'password doesnt match'}
         except ObjectDoesNotExist:
