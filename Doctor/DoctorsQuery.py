@@ -70,6 +70,7 @@ class DoctorsQuery:
         try:
             data = DoctorData.objects.get(id=doctorID)
             if photo is not None:
+                self.logger.debug(f'photo base64: {photo}')
                 if data.photo:
                     Utility.removeFile(data.photo.path)
                 data.photo = Utility.convertBase64ToImageFile(photo, id=doctorID)
