@@ -291,7 +291,11 @@ class API:
             if specializationID is not None and specializationID != '':
                 specializationID = int(specializationID)
             specialization = request.POST.get('specialization')
-            jsonData = self.queryConnectionPool.updateDoctorProfileBy(hospitalID, doctorID,name,degrees,visitFee,roomNo,maxPatientPerDay,specializationID,specialization)
+            photo = request.POST.get('photo',None)
+            jsonData = self.queryConnectionPool.updateDoctorProfileBy(hospitalID, doctorID,
+                                                                      name,degrees,visitFee,
+                                                                      roomNo,maxPatientPerDay,
+                                                                      specializationID,specialization,photo)
         except IntegrityError as e:
             jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
         except:
