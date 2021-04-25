@@ -1,4 +1,6 @@
 import pymysql
+
+from HealthBackendProject import Utility
 from HealthBackendProject.StatusCode import StatusCode
 from Doctor.models.DoctorData import DoctorData
 from django.db import connection,IntegrityError
@@ -170,11 +172,19 @@ class HospitalQuery:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'no data found'}
         return json_data
 
-    def updateDoctorProfileBy(self, hospitalID, doctorID,name,degrees,visitFee,roomNo,maxPatientPerDay,specializationID,specialization):
+    def updateDoctorProfileBy(self, hospitalID, doctorID,name,
+                              degrees,visitFee,roomNo,
+                              maxPatientPerDay,specializationID,
+                              specialization,photo):
         json_data = {}
         try:
             doctorData = DoctorData.objects.get(id=doctorID)
             hospitalDoctor = HospitalDoctorData.objects.get(hospital_id=hospitalID,doctor_id=doctorID)
+            if photo is not None:
+                if doctorData.photo:
+                    Utility.removeFile(doctorData.photo.path)
+                doctorData.photo = Utility.convertBase64ToImageFile(photo, id=doctorID)
+
             if name is not None and name != '':
                 doctorData.name = name;
             if degrees is not None and degrees != '':
