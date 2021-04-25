@@ -53,6 +53,7 @@ class API:
         specializationID = request.POST.get('specialization_id', None)
         specializationID = None if specializationID == None else int(specializationID)
         photo = request.POST.get('photo', None)
+        self.logger.debug(f'photo base64: {photo}')
         jsonData = self.queryConnectionPool.infoUpdate(name=name, doctorID=doctorID, password=password, email=email,
                                                        nid=nid, address=address,
                                                         specializationID=specializationID,
