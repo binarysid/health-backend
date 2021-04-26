@@ -268,7 +268,7 @@ class API:
         try:
             doctorID = int(request.POST['doctor_id'])
             hospitalID = int(request.POST['hospital_id'])
-            jsonData = self.queryConnectionPool.getDoctorProfileBy(hospitalID, doctorID)
+            jsonData = self.queryConnectionPool.getDoctorProfileBy(hospitalID, doctorID,request)
         except IntegrityError as e:
             jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
         except:

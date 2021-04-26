@@ -151,7 +151,7 @@ class HospitalQuery:
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'schedule day added'}
         return json_data
 
-    def getDoctorProfileBy(self, hospitalID,doctorID):
+    def getDoctorProfileBy(self, hospitalID,doctorID,request):
         json_data = {}
         try:
             info = HospitalDoctorData.objects.get(hospital_id=hospitalID,doctor_id=doctorID)
@@ -166,7 +166,9 @@ class HospitalQuery:
                     'visit_end_day':info.visit_end_day if info.visit_end_day is not None else '',
                     'room_no':info.room_no if info.room_no is not None else '',
                     'degrees':info.doctor.degrees if info.doctor.degrees is not None else '',
-                    'max_patient_per_day':info.max_patient_per_day if info.max_patient_per_day is not None else 0}
+                    'max_patient_per_day':info.max_patient_per_day if info.max_patient_per_day is not None else 0,
+                    'photo':request.build_absolute_uri(info.doctor.photo.url) if info.doctor.photo else ''
+                    }
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'success', 'data': data}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'no data found'}
