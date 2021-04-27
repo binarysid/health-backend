@@ -14,7 +14,7 @@ import os
 from .DBCredentials import DBCredentials
 from django.core.files.storage import FileSystemStorage
 from HealthBackendProject import MediaDirGen
-
+from .Service import Firebase
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,6 +31,8 @@ DEBUG = True
 TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = ['*']
+
+Firebase.initApp()
 
 # Application definition
 
