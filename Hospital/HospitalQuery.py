@@ -16,7 +16,7 @@ from .models.WeekData import WeekData
 from .models.DoctorAppointmentData import DoctorAppointmentData
 from HealthBackendProject.AppointmentStatus import AppointmentStatus
 from .Services import HospitalService
-
+from HealthBackendProject.Service import PushNotification
 
 class HospitalQuery:
     timeFormat = '%H:%M'
@@ -34,6 +34,7 @@ class HospitalQuery:
             for appointment in data:
                 appointment.status = AppointmentStatus.CANCELLED.value
                 appointment.save()
+            PushNotification.send_appntment_cancel_notification(appointment_info=data)
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'selected appointments cancelled'}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'no appointment found'}

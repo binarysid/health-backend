@@ -101,7 +101,7 @@ class DoctorsQuery:
         except:
             return None
 
-    def register(self, name, phone, password, regNo, hospitalID,specializationID):
+    def register(self, name, phone, password, regNo, hospitalID,specializationID,):
         json_data = {}
         hospitalAPI = HospitalQuery(self.logger)
         try:

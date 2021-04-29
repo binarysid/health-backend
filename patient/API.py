@@ -12,7 +12,8 @@ class API:
         name = request.POST.get('name',None)
         phone = request.POST.get('phone',None)
         password = request.POST.get('password',None)
-        jsonData = self.queryConnectionPool.register(name,phone,password)
+        notification_reg_token = request.POST.get('notification_reg_token',None)
+        jsonData = self.queryConnectionPool.register(name,phone,password,notification_reg_token)
         return HttpResponse(json.dumps(jsonData), content_type="application/json")
 
     @csrf_exempt
@@ -20,7 +21,8 @@ class API:
         # version = request.headers['version']
         phone = request.POST.get('phone', None)
         password = request.POST.get('password', None)
-        jsonData = self.queryConnectionPool.login(phone, password)
+        notification_reg_token = request.POST.get('notification_reg_token',None)
+        jsonData = self.queryConnectionPool.login(phone, password, notification_reg_token)
         return HttpResponse(json.dumps(jsonData), content_type="application/json")
 
     @csrf_exempt

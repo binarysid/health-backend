@@ -12,18 +12,18 @@ class PatientQuery:
         cursor.close()
         conn.close()
 
-    def register(self,name,phone,password):
+    def register(self,name,phone,password,notification_reg_token):
         try:
             pat = PatientData.objects.get(phone=phone)
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, "message": 'account with this number already exists'}
         except ObjectDoesNotExist:
             passwd = HashPassword.createPassword(password)
-            patient = PatientData(name=name, phone=phone, password=passwd)
+            patient = PatientData(name=name, phone=phone, password=passwd,notification_reg_token=notification_reg_token)
             patient.save()
             json_data = {'code': StatusCode.HTTP_200_OK.value, "id": patient.id}
         return json_data
 
-    def login(self, phone, password):
+    def login(self, phone, password,notification_reg_token):
         json_data = {}
         try:
             data = PatientData.objects.get(phone=phone)
@@ -32,6 +32,9 @@ class PatientQuery:
                 json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id, 'name': data.name}
             else:
                 json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, "message": 'password doesnt match'}
+            if data.notification_reg_token != notification_reg_token:
+                data.notification_reg_token = notification_reg_token
+                data.save()
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'user not found'}
         return json_data

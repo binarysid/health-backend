@@ -9,6 +9,16 @@ def initApp():
     firebase_admin.initialize_app(cred,{
         'databaseURL':'https://ehealth-51077-default-rtdb.firebaseio.com/'
     })
+
+def get_payload(data,reg_token):
+    return messaging.Message(
+        data=data, token=reg_token,
+    )
+
+def send_batch_message(messages):
+    response = messaging.send_all(messages)
+    print('{0} messages were sent successfully'.format(response.success_count))
+
 def send_push_to_device(reg_token):
     message = messaging.Message(
         data={
@@ -60,23 +70,3 @@ def subscribe_to_topic(reg_tokens,topic):
 def unsubscribeToTopic(tokens,topic):
     response = messaging.unsubscribe_from_topic(tokens, topic)
     print(response.success_count, 'tokens were subscribed successfully')
-
-def setDBvalue():
-    ref = db.reference('/')
-    ref.set({
-        'patient':{
-
-                'p1':
-                    [
-                    {
-                        'name': 'Linkon',
-                        'phone': '09999'
-                    },
-                    {
-                        'name': 'Sumon',
-                        'phone': '0888'
-                    }
-                ]
-
-        }
-    })

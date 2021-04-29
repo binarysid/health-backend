@@ -9,6 +9,7 @@ class PatientData(models.Model):
     n_id = models.IntegerField(blank=True, null=True)
     lat = models.FloatField(blank=True, null=True)
     lng = models.FloatField(blank=True, null=True)
+    notification_reg_token = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         #managed = False

@@ -14,7 +14,7 @@ import os
 from .DBCredentials import DBCredentials
 from django.core.files.storage import FileSystemStorage
 from HealthBackendProject import MediaDirGen
-from .Service import Firebase
+from .Service import PushNotification
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -32,7 +32,8 @@ TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
-Firebase.initApp()
+PushNotification.initialize()
+# Firebase.send_push_to_device('f1bjAtHaSFc:APA91bEwHbLHX_5sw5RBxhMlKEEm5dPtuQonPNouM6SRHhDPTV2772nA55c1ofwsKi36pDbuw6ohvAMk_wAOdR3ReLsAYZ7iQW_dg-OnCeuOOovAk40mZ6GgllskdY8QtsigllsMwjSV')
 
 # Application definition
 
