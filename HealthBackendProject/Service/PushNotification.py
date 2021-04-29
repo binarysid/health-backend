@@ -1,6 +1,5 @@
-import Firebase
-from Hospital.models import DoctorAppointmentData
-import array
+from HealthBackendProject.Service import Firebase
+# from Hospital.models.DoctorAppointmentData import DoctorAppointmentData
 
 def initialize():
     Firebase.initApp()

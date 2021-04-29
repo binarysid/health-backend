@@ -33,6 +33,7 @@ TEMPLATE_DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 PushNotification.initialize()
+# Firebase.initApp()
 # Firebase.send_push_to_device('f1bjAtHaSFc:APA91bEwHbLHX_5sw5RBxhMlKEEm5dPtuQonPNouM6SRHhDPTV2772nA55c1ofwsKi36pDbuw6ohvAMk_wAOdR3ReLsAYZ7iQW_dg-OnCeuOOovAk40mZ6GgllskdY8QtsigllsMwjSV')
 
 # Application definition
