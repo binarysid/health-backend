@@ -15,18 +15,24 @@ def addSpecialization(name) -> SpecializationData:
 
 def attachSpecializationToHospital(specializationID,specializationName, hospitalID):
         json_data = {}
+        logger.debug(f'sp id: {specializationID}')
         try:
             hosp_sp = HospitalSpecializationData.objects.get(hospital_id=hospitalID,specialization_id=specializationID)
             json_data = {'code': StatusCode.HTTP_403_FORBIDDEN.value, 'message': 'entry already exists'}
         except ObjectDoesNotExist:
+            logger.debug('sp not found for hospital')
             if specializationID is not None:
                 specializationID = int(specializationID)
                 specialization = SpecializationData.objects.get(id=specializationID)
+                logger.debug('sp found in sp table')
             else:
                 specialization = addSpecialization(name=specializationName)
             hospital = HospitalData.objects.get(id=hospitalID)
+            logger.debug('hospital found')
             hosp_sp = HospitalSpecializationData(hospital=hospital,specialization=specialization)
+            logger.debug('sp object created')
             hosp_sp.save()
+            logger.debug('sp object saved')
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': "successful", 'id':specialization.id}
         except IntegrityError as e:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
