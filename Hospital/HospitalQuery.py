@@ -17,6 +17,7 @@ from .models.DoctorAppointmentData import DoctorAppointmentData
 from HealthBackendProject.AppointmentStatus import AppointmentStatus
 from .Services import HospitalService
 from HealthBackendProject.Service import PushNotification
+from patient.models.PatientData import PatientData
 
 class HospitalQuery:
     timeFormat = '%H:%M'
@@ -48,14 +49,18 @@ class HospitalQuery:
         inputDate = datetime.strptime(visitDate, '%d-%m-%Y').date()
         # inputTime = datetime.strptime(visitTime, self.timeFormat).time()
         if inputDate >= datetime.now().date():
-            visitorID = patientID if patientID > 0 else patientPhone
             serial = 0
             try:
                 data = DoctorAppointmentData.objects.get(hospital_id=hospitalID,doctor_id=doctorID,visit_date=inputDate,patient_phone=patientPhone,patient_id=patientID)
                 return {'code': StatusCode.HTTP_403_FORBIDDEN.value, 'message': 'already has a booking with this number for this date'}
             except ObjectDoesNotExist:
                 serial = self.generateSerialNoBy(hospitalID, doctorID, inputDate)
-                data = DoctorAppointmentData(hospital_id=hospitalID,doctor_id=doctorID,visit_date=inputDate,patient_phone=patientPhone,patient_id=patientID,patient_name=patientName,visit_time=visitTime,serial_no=serial)
+                patient = None
+                if patientID != None:
+                    patient = PatientData.objects.get(id=patientID)
+                data = DoctorAppointmentData(hospital_id=hospitalID,doctor_id=doctorID,visit_date=inputDate,
+                                             patient_phone=patientPhone,patient=patient,
+                                             patient_name=patientName,visit_time=visitTime,serial_no=serial)
                 data.save()
                 json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': "appointment successfull",'serialNo':serial}
             except:
