@@ -5,7 +5,7 @@ from .API import API
 
 api = API()
 urlpatterns = [
-        path('api/infoupdate', api.InfoUpdate, name=''),
+        path('api/infoupdate', api.UpdateInfo, name=''),
         path('api/cancelappointment', api.CancelAppointment, name=''),
         path('api/createweeks', api.createWeekList, name=''),
         path('api/hospitals', api.HospitalList, name=''),

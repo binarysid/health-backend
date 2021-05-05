@@ -377,8 +377,6 @@ class HospitalQuery:
         except ObjectDoesNotExist:
             passwd = HashPassword.createPassword(password)
             data = HospitalData(name=name, password=passwd,license_no=licenseNo, phone=phone)
-            if logo is not None:
-                HospitalService.getProfileLogo(url=logo, data=data)
             data.save()
             json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id}
         except:

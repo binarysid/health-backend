@@ -85,13 +85,6 @@ class API:
         return HttpResponse(json.dumps(jsonData), content_type="application/json")
 
     @csrf_exempt
-    def InfoUpdate(self, request):
-        id = int(request.POST['id'])
-        logo = request.POST.get('logo', None)
-        json_data = HospitalService.editHospitalInfo(id=id,logo=logo)
-        return HttpResponse(json.dumps(json_data), content_type="application/json")
-
-    @csrf_exempt
     def HospitalRegistration(self,request):
         try:
             name = request.POST['name']
@@ -101,11 +94,34 @@ class API:
             logo = request.POST.get('logo',None)
             jsonData = self.queryConnectionPool.executeRegister(name, phone, password, licenseNo,logo=logo)
         except IntegrityError as e:
-            self.logger.debug(e.args[1])
             jsonData = {'code':StatusCode.HTTP_400_BAD_REQUEST.value, 'message':e.args[1]}
         except:
-            self.logger.debug('post request field parse error')
+            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
         return HttpResponse(json.dumps(jsonData), content_type="application/json")
+
+    @csrf_exempt
+    def UpdateInfo(self,request):
+        try:
+            id = int(request.POST['id'])
+            name = request.POST.get('name',None)
+            phone = request.POST.get('phone',None)
+            password = request.POST.get('password',None)
+            lat = request.POST.get('lat',None)
+            lng = request.POST.get('lng',None)
+            logo = request.POST.get('logo',None)
+            email = request.POST.get('email', None)
+            address = request.POST.get('address', None)
+            jsonData = HospitalService.infoUpdate(name=name,id=id,
+                                                           phone=phone,password=password,
+                                                           lat=lat,lng=lng,
+                                                           logo=logo,email=email,
+                                                           address=address)
+        except IntegrityError as e:
+            jsonData = {'code':StatusCode.HTTP_400_BAD_REQUEST.value, 'message':e.args[1]}
+        except:
+            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+
 
     @csrf_exempt
     def CreateSpecialization(self,request):

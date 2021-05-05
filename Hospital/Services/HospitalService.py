@@ -6,7 +6,8 @@ from django.db import connection, IntegrityError
 from HealthBackendProject import Utility
 
 
-def editHospitalInfo(id,logo):
+def infoUpdate(name, id, phone, password, email,
+               address, lat, lng, logo):
     json_data = {}
     try:
         data = HospitalData.objects.get(id=id)
@@ -14,11 +15,28 @@ def editHospitalInfo(id,logo):
             if data.logo:
                 Utility.removeFile(data.logo.path)
             data.logo = Utility.convertBase64ToImageFile(logo, id=id)
+        if name != None:
+            data.name = name
+        if password != None:
+            data.password = HashPassword.createPassword(password)
+        if email != None:
+            data.email = email
+        if phone != None:
+            data.phone = phone
+        if address != None:
+            data.address = address
+        if lat != None:
+            lat = float(lat)
+            data.lat = lat
+        if lng != None:
+            lng = float(lng)
+            data.lng = lng
         data.save()
-        json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'info updated'}
-    except IntegrityError as e:
-        json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
+        json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'successfully updated info'}
+    except ObjectDoesNotExist:
+        json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'user not found'}
     except:
-        json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'no account found'}
+        json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
     return json_data
+
 
