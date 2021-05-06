@@ -359,8 +359,7 @@ class HospitalQuery:
             hospitals = []
 
             for item in data:
-                hospitals.append(dict(name=item.name, phone=item.phone,
-                                      id=item.id, address=item.address,icon= request.build_absolute_uri(item.logo.url) if item.logo else ''))
+                hospitals.append(HospitalService.getData(request=request,item=item))
             return {'code': StatusCode.HTTP_200_OK.value, 'message': 'success', 'data': hospitals}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'no hospital found'}
@@ -368,7 +367,7 @@ class HospitalQuery:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
         return json_data
 
-    def executeRegister(self,name,phone,password,licenseNo,logo):
+    def executeRegister(self,request,name,phone,password,licenseNo,logo):
         json_data = {}
         try:
             data = HospitalData.objects.get(license_no=licenseNo, phone=phone)
@@ -378,9 +377,8 @@ class HospitalQuery:
             passwd = HashPassword.createPassword(password)
             data = HospitalData(name=name, password=passwd,license_no=licenseNo, phone=phone)
             data.save()
-            json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id}
+            json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id,'data':HospitalService.getData(request=request,item=data)}
         except:
-            self.logger.debug('hospital object get/create exception')
             json_data = {'code': StatusCode.HTTP_403_FORBIDDEN.value, "message": 'Something went wrong'}
 
         return json_data
@@ -429,7 +427,9 @@ class HospitalQuery:
             data = HospitalData.objects.get(phone=phone)
             json_data = {}
             if HashPassword.isValidPassword(password, data.password):
-                json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id, 'name': data.name,'icon':request.build_absolute_uri(data.logo.url) if data.logo else ''}
+                json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id, 'name': data.name,
+                             'icon':request.build_absolute_uri(data.logo.url) if data.logo else '',
+                             'data':HospitalService.getData(request=request,item=data)}
             else:
                 json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, "message": 'password doesnt match'}
         except ObjectDoesNotExist:

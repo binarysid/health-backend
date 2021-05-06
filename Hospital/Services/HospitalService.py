@@ -6,7 +6,7 @@ from django.db import connection, IntegrityError
 from HealthBackendProject import Utility
 
 
-def infoUpdate(name, id, phone, password, email,
+def infoUpdate(request,name, id, phone, password, email,
                address, lat, lng, logo):
     json_data = {}
     try:
@@ -32,11 +32,15 @@ def infoUpdate(name, id, phone, password, email,
             lng = float(lng)
             data.lng = lng
         data.save()
-        json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'successfully updated info'}
+        json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'successfully updated info','data':getData(request=request,item=data)}
     except ObjectDoesNotExist:
         json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'user not found'}
     except:
         json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
     return json_data
 
-
+def getData(request,item):
+    return dict(name=item.name, phone=item.phone,
+         id=item.id, address=item.address,
+         lat=item.lat, lng=item.lng,
+         icon=request.build_absolute_uri(item.logo.url) if item.logo else '')

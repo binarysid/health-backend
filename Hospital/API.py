@@ -92,7 +92,7 @@ class API:
             password = request.POST['password']
             licenseNo = request.POST['license_no']
             logo = request.POST.get('logo',None)
-            jsonData = self.queryConnectionPool.executeRegister(name, phone, password, licenseNo,logo=logo)
+            jsonData = self.queryConnectionPool.executeRegister(request,name, phone, password, licenseNo,logo=logo)
         except IntegrityError as e:
             jsonData = {'code':StatusCode.HTTP_400_BAD_REQUEST.value, 'message':e.args[1]}
         except:
@@ -111,7 +111,7 @@ class API:
             logo = request.POST.get('logo',None)
             email = request.POST.get('email', None)
             address = request.POST.get('address', None)
-            jsonData = HospitalService.infoUpdate(name=name,id=id,
+            jsonData = HospitalService.infoUpdate(request=request,name=name,id=id,
                                                            phone=phone,password=password,
                                                            lat=lat,lng=lng,
                                                            logo=logo,email=email,
