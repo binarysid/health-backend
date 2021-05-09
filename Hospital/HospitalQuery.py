@@ -435,7 +435,7 @@ class HospitalQuery:
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'user not found'}
         except:
-            json_data = {'code':StatusCode.HTTP_400_BAD_REQUEST, 'message':'Something Went Wrong'}
+            json_data = {'code':StatusCode.HTTP_400_BAD_REQUEST.value, 'message':'Something Went Wrong'}
         return json_data
 
     def createWeekList(self):
