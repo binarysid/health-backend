@@ -40,7 +40,7 @@ def infoUpdate(request,name, id, phone, password, email,
     return json_data
 
 def getData(request,item):
-    return dict(name=item.name, phone=item.phone,
+    return dict(name=item.name, phone=item.phone,email=item.email,
          id=item.id, address=item.address,
          lat=item.lat, lng=item.lng,
          icon=request.build_absolute_uri(item.logo.url) if item.logo else '')

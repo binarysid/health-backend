@@ -5,6 +5,7 @@ class HospitalData(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255,unique=True)
     address = models.CharField(max_length=255, blank=True, null=True)
+    email = models.CharField(max_length=255, blank=True, null=True)
     password = models.CharField(max_length=255)
     license_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
     phone = models.CharField(max_length=255)
