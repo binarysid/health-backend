@@ -4,7 +4,25 @@ from HealthBackendProject.StatusCode import StatusCode
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection, IntegrityError
 from HealthBackendProject import Utility
+from Hospital.models.DoctorAppointmentData import DoctorAppointmentData
 
+dateFormate = '%Y-%m-%d'
+def getAppointmentsby(patientID):
+    json_data = {}
+    try:
+        appointments = []
+        data = DoctorAppointmentData.objects.filter(patient_id=patientID).order_by("visit_date")
+        for index, item in enumerate(data):
+            appointments.append(dict(id=item.id,
+                                        date=item.visit_date.strftime(dateFormate), serial=item.serial_no,
+                                        status=item.status,hospital=item.hospital.name,doctor=item.doctor.name))
+        json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'success', 'data': appointments}
+
+    except ObjectDoesNotExist:
+        json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'no appointment found'}
+    except:
+        json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'somehting went wrong'}
+    return json_data
 
 def infoUpdate(request,name, id, phone, password, email,
                address, lat, lng, logo):

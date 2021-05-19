@@ -3,9 +3,16 @@ from django.db import IntegrityError
 from django.http import HttpResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
+from Hospital.Services import HospitalService
 
 class API:
     queryConnectionPool = PatientQuery()
+
+    @csrf_exempt
+    def GetAppointments(self,request):
+        id = int(request.POST.get('id',None))
+        jsonData = HospitalService.getAppointmentsby(patientID=id)
+        return HttpResponse(json.dumps(jsonData), content_type="application/json")
 
     @csrf_exempt
     def UserRegistration(self,request):
