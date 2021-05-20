@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection, IntegrityError
 from HealthBackendProject import Utility
 from Hospital.models.DoctorAppointmentData import DoctorAppointmentData
-
+from Hospital.models.HospitalDoctorScheduleData import HospitalDoctorScheduleData
 dateFormate = '%Y-%m-%d'
 def getAppointmentsby(patientID):
     json_data = {}
@@ -13,9 +13,14 @@ def getAppointmentsby(patientID):
         appointments = []
         data = DoctorAppointmentData.objects.filter(patient_id=patientID).order_by("visit_date")
         for index, item in enumerate(data):
+            doctorID = item.doctor.id
+            hospitalID = item.hospital.id
+            schedule = HospitalDoctorScheduleData.objects.get(doctor_id=doctorID,hospital_id=hospitalID)
             appointments.append(dict(id=item.id,
                                         date=item.visit_date.strftime(dateFormate), serial=item.serial_no,
-                                        status=item.status,hospital=item.hospital.name,doctor=item.doctor.name))
+                                        status=item.status,hospital=item.hospital.name,doctor=item.doctor.name,
+                                        start_time=schedule.visit_start_time,end_time=schedule.visit_end_time
+                                     ))
         json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'success', 'data': appointments}
 
     except ObjectDoesNotExist:
