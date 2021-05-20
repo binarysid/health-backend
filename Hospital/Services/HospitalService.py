@@ -15,7 +15,8 @@ def getAppointmentsby(patientID):
         for index, item in enumerate(data):
             doctorID = item.doctor.id
             hospitalID = item.hospital.id
-            schedule = HospitalDoctorScheduleData.objects.get(doctor_id=doctorID,hospital_id=hospitalID)
+            schedules = HospitalDoctorScheduleData.objects.filter(doctor_id=doctorID,hospital_id=hospitalID)
+            schedule = schedules[0]
             appointments.append(dict(id=item.id,
                                         date=item.visit_date.strftime(dateFormate), serial=item.serial_no,
                                         status=item.status,hospital=item.hospital.name,doctor=item.doctor.name,
