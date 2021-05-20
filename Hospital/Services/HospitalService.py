@@ -13,14 +13,13 @@ def getAppointmentsby(patientID):
         appointments = []
         data = DoctorAppointmentData.objects.filter(patient_id=patientID).order_by("visit_date")
         for index, item in enumerate(data):
-            doctorID = item.doctor.id
-            hospitalID = item.hospital.id
-            schedules = HospitalDoctorScheduleData.objects.filter(doctor_id=doctorID,hospital_id=hospitalID)
+            schedules = HospitalDoctorScheduleData.objects.filter(doctor_id=item.doctor.id,hospital_id=item.hospital.id)
             schedule = schedules[0]
             appointments.append(dict(id=item.id,
                                         date=item.visit_date.strftime(dateFormate), serial=item.serial_no,
                                         status=item.status,hospital=item.hospital.name,doctor=item.doctor.name,
-                                        start_time=schedule.visit_start_time,end_time=schedule.visit_end_time
+                                        start_time=schedule.visit_start_time,end_time=schedule.visit_end_time,
+                                        doctor_contact=item.doctor.phone,hospital_contact=item.hospital.phone
                                      ))
         json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'success', 'data': appointments}
 
