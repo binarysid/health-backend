@@ -403,8 +403,8 @@ class HospitalQuery:
             json_data = {'code':StatusCode.HTTP_403_FORBIDDEN.value, 'message':'doctor already exists'}
         except ObjectDoesNotExist:
             doctorData = DoctorData.objects.get(id=doctorID)
-            data = HospitalDoctorData(hospital_id=hospitalID,doctor_id=doctorID,max_patient_per_day=8,phone=doctorData.phone)
-            data.save()
+            hosp_doctor_data = HospitalDoctorData(hospital_id=hospitalID,doctor=doctorData,phone=doctorData.phone)
+            hosp_doctor_data.save()
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': "doctor added successfully"}
         except:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': "doctor no found"}

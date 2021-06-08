@@ -13,7 +13,7 @@ class HospitalDoctorData(models.Model):
     visit_start_day = models.CharField(max_length=255, blank=True, null=True)
     visit_end_day = models.CharField(max_length=255, blank=True, null=True)
     room_no = models.CharField(max_length=255, blank=True, null=True)
-    max_patient_per_day = models.IntegerField()
+    max_patient_per_day = models.IntegerField(blank=True,null=True)
 
     class Meta:
         # managed = False
