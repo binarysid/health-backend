@@ -15,6 +15,8 @@ from .DBCredentials import DBCredentials
 from django.core.files.storage import FileSystemStorage
 from HealthBackendProject import MediaDirGen
 from .Service import PushNotification
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -33,10 +35,20 @@ TEMPLATE_DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 PushNotification.initialize()
-# Firebase.initApp()
-# Firebase.send_push_to_device('f1bjAtHaSFc:APA91bEwHbLHX_5sw5RBxhMlKEEm5dPtuQonPNouM6SRHhDPTV2772nA55c1ofwsKi36pDbuw6ohvAMk_wAOdR3ReLsAYZ7iQW_dg-OnCeuOOovAk40mZ6GgllskdY8QtsigllsMwjSV')
 
-# Application definition
+sentry_sdk.init(
+    dsn="https://e356af10476c49eda433ffd1d2fd878f@o813203.ingest.sentry.io/5805883",
+    integrations=[DjangoIntegration()],
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=1.0,
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)
 
 INSTALLED_APPS = [
     'Hospital',
