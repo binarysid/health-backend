@@ -18,6 +18,7 @@ from HealthBackendProject.AppointmentStatus import AppointmentStatus
 from .Services import HospitalService
 from HealthBackendProject.Service import PushNotification
 from patient.models.PatientData import PatientData
+from HealthBackendProject.Service import ExceptionLogger
 
 class HospitalQuery:
     timeFormat = '%H:%M'
@@ -39,9 +40,9 @@ class HospitalQuery:
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'selected appointments cancelled'}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'no appointment found'}
-        except:
+        except Exception as e:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
-
+            ExceptionLogger.track(e=e)
         return json_data
 
     def executeDoctorAppointment(self, doctorID, hospitalID, visitTime, visitDate,patientName,patientPhone,patientID):
@@ -63,8 +64,9 @@ class HospitalQuery:
                                              patient_name=patientName,visit_time=visitTime,serial_no=serial)
                 data.save()
                 json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': "appointment successfull",'serialNo':serial}
-            except:
+            except Exception as e:
                 json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': "some error occured"}
+                ExceptionLogger.track(e=e)
         else:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': "cannot request for appointment using past date"}
         return json_data
@@ -109,7 +111,8 @@ class HospitalQuery:
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'success','data':appointments}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'no appointment found'}
-        except ObjectDoesNotExist:
+        except Exception as e:
+            ExceptionLogger.track(e=e)
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'somehting went wrong'}
         return json_data
 
@@ -121,6 +124,8 @@ class HospitalQuery:
             json_data = {'code': StatusCode.HTTP_200_OK.value, "message": 'schedule day removed'}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'unable to remove'}
+        except Exception as e:
+            ExceptionLogger.track(e=e)
         return json_data
 
     def updateDoctorScheduleForHospital(self,doctorID, hospitalID, weekID,startTime,endTime,isAvailable):
@@ -137,7 +142,8 @@ class HospitalQuery:
             json_data = {'code': StatusCode.HTTP_200_OK.value, "message": 'schedule updated'}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'schedule doesnt exists'}
-        except:
+        except Exception as e:
+            ExceptionLogger.track(e=e)
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
 
         return json_data
@@ -155,6 +161,10 @@ class HospitalQuery:
                 data.visit_end_time = endTime
             data.save()
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'schedule day added'}
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+
         return json_data
 
     def getDoctorProfileBy(self, hospitalID,doctorID,request):
@@ -178,6 +188,10 @@ class HospitalQuery:
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'success', 'data': data}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'no data found'}
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+
         return json_data
 
     def updateDoctorProfileBy(self, hospitalID, doctorID,name,
@@ -208,7 +222,8 @@ class HospitalQuery:
             doctorData.save()
             hospitalDoctor.save()
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'successfully updated info'}
-        except:
+        except Exception as e:
+            ExceptionLogger.track(e=e)
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'user not found'}
         return json_data
 
@@ -298,7 +313,8 @@ class HospitalQuery:
                 json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'no data found'}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'no data found'}
-        except:
+        except Exception as e:
+            ExceptionLogger.track(e=e)
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
         return json_data
 
@@ -312,6 +328,10 @@ class HospitalQuery:
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'success', 'data': weeks}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'no data found'}
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+
         return json_data
 
     def detachSpecializationFromHospital(self, specializationID, hospitalID):
@@ -322,7 +342,8 @@ class HospitalQuery:
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'removed successfully'}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_403_FORBIDDEN.value, 'message': "no entry found"}
-        except:
+        except Exception as e:
+            ExceptionLogger.track(e=e)
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': "something went wrong"}
 
         return json_data
@@ -351,20 +372,24 @@ class HospitalQuery:
             json_data = {'code': StatusCode.HTTP_200_OK.value, "message": 'successfully updated doctor info'}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value,'message':'no data found'}
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+
         return json_data
 
     def getHospitalList(self,request):
         try:
             data = HospitalData.objects.all()
             hospitals = []
-
             for item in data:
                 hospitals.append(HospitalService.getData(request=request,item=item))
             return {'code': StatusCode.HTTP_200_OK.value, 'message': 'success', 'data': hospitals}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'no hospital found'}
-        except:
+        except Exception as e:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+            ExceptionLogger.track(e=e)
         return json_data
 
     def executeRegister(self,request,name,phone,password,licenseNo,logo):
@@ -378,7 +403,8 @@ class HospitalQuery:
             data = HospitalData(name=name, password=passwd,license_no=licenseNo, phone=phone)
             data.save()
             json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id,'data':HospitalService.getData(request=request,item=data)}
-        except:
+        except Exception as e:
+            ExceptionLogger.track(e=e)
             json_data = {'code': StatusCode.HTTP_403_FORBIDDEN.value, "message": 'Something went wrong'}
 
         return json_data
@@ -394,6 +420,10 @@ class HospitalQuery:
             json_data = {'code': StatusCode.HTTP_200_OK.value, "message": 'password updated'}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, "message": 'user not found'}
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, "message": 'something went wrong'}
+
         return json_data
 
     def doctorEntryOnHospitalList(self, doctorID, hospitalID):
@@ -406,7 +436,8 @@ class HospitalQuery:
             hosp_doctor_data = HospitalDoctorData(hospital_id=hospitalID,doctor=doctorData,phone=doctorData.phone)
             hosp_doctor_data.save()
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': "doctor added successfully"}
-        except:
+        except Exception as e:
+            ExceptionLogger.track(e=e)
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': "doctor no found"}
 
         return json_data
@@ -419,6 +450,10 @@ class HospitalQuery:
             json_data = {'code':StatusCode.HTTP_200_OK.value, 'message':'doctor removed successfully'}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': "no doctor found"}
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': "something went wrong"}
+
         return json_data
 
     def login(self,request, phone, password):
@@ -434,7 +469,8 @@ class HospitalQuery:
                 json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, "message": 'password doesnt match'}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'user not found'}
-        except:
+        except Exception as e:
+            ExceptionLogger.track(e=e)
             json_data = {'code':StatusCode.HTTP_400_BAD_REQUEST.value, 'message':'Something Went Wrong'}
         return json_data
 
@@ -446,3 +482,4 @@ class HospitalQuery:
                 data.save()
         except:
             print('unable to create data')
+
