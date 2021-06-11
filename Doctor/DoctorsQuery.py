@@ -11,6 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from Hospital.models.HospitalDoctorData import HospitalDoctorData
 from Hospital.HospitalQuery import HospitalQuery
 from HealthBackendProject import Utility
+from HealthBackendProject.Service import ExceptionLogger
 
 class DoctorsQuery:
 
@@ -54,7 +55,8 @@ class DoctorsQuery:
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'success', 'data': doctors}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'no doctor found'}
-        except:
+        except Exception as e:
+            ExceptionLogger.track(e=e)
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
         return json_data
 
@@ -91,8 +93,10 @@ class DoctorsQuery:
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'successfully updated info'}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'user not found'}
-        except:
+        except Exception as e:
+            ExceptionLogger.track(e=e)
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+
         return json_data
 
     def getSpecializationObj(self,id):
@@ -120,13 +124,18 @@ class DoctorsQuery:
                     json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id,'message':'successfully registered'}
             else:
                 json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id,'message':'successfully registered'}
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+
         return json_data
 
     def addDoctorToHospital(self,hospitalID,doctorID,hospitalAPIObj):
         json_data = {}
         try:
             json_data = hospitalAPIObj.doctorEntryOnHospitalList(doctorID=doctorID, hospitalID=hospitalID)
-        except:
+        except Exception as e:
+            ExceptionLogger.track(e=e)
             json_data = {'code':StatusCode.HTTP_404_NOT_FOUND.value,'message':'unable to add doctor to hospital'}
         return json_data
 
@@ -141,4 +150,8 @@ class DoctorsQuery:
                 json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, "message": 'password doesnt match'}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'user not found'}
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+
         return json_data

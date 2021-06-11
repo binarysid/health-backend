@@ -9,6 +9,9 @@ import logging
 from .Services import Specialization
 from HealthBackendProject import LogHandler
 from .Services import HospitalService
+from HealthBackendProject.Service import ExceptionLogger
+
+
 class API:
     def __init__(self):
         self.logger = LogHandler.getLogHandler(filename='hospital.log')
@@ -20,25 +23,26 @@ class API:
         doctorID = int(request.POST['doctor_id'])
         hospitalID = int(request.POST['hospital_id'])
         date = request.POST.get('date', None)
-        jsonData = self.queryConnectionPool.cancelDoctorAppointment(hospitalID=hospitalID,doctorID=doctorID,date=date)
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+        json_data = self.queryConnectionPool.cancelDoctorAppointment(hospitalID=hospitalID,doctorID=doctorID,date=date)
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def Login(self,request):
         # version = request.headers['version']
         phone = request.POST.get('phone', None)
         password = request.POST.get('password', None)
-        jsonData = self.queryConnectionPool.login(request=request,phone=phone, password=password)
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+        json_data = self.queryConnectionPool.login(request=request,phone=phone, password=password)
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def HospitalList(self,request):
         # print()
         try:
-            jsonData = self.queryConnectionPool.getHospitalList(request=request)
-        except IntegrityError as e:
-            jsonData = {'code':StatusCode.HTTP_400_BAD_REQUEST.value, 'message':e.args[1]}
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+            json_data = self.queryConnectionPool.getHospitalList(request=request)
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def createWeekList(self,request):
@@ -49,40 +53,43 @@ class API:
         try:
             id = int(request.POST['id'])
             name = request.POST['name']
-            jsonData = self.queryConnectionPool.updateWeekBy(id, name)
-        except IntegrityError as e:
-            jsonData = {'code':StatusCode.HTTP_400_BAD_REQUEST.value, 'message':e.args[1]}
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+            json_data = self.queryConnectionPool.updateWeekBy(id, name)
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def AddDoctor(self,request):
         try:
             doctorID = int(request.POST['doctor_id'])
             hospitalID = int(request.POST['hospital_id'])
-            jsonData = self.queryConnectionPool.doctorEntryOnHospitalList(doctorID, hospitalID)
-        except IntegrityError as e:
-            jsonData = {'code':StatusCode.HTTP_400_BAD_REQUEST.value, 'message':e.args[1]}
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+            json_data = self.queryConnectionPool.doctorEntryOnHospitalList(doctorID, hospitalID)
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def removeDoctor(self,request):
         try:
             doctorID = int(request.POST['doctor_id'])
             hospitalID = int(request.POST['hospital_id'])
-            jsonData = self.queryConnectionPool.removeDoctorFromHospital(doctorID, hospitalID)
-        except IntegrityError as e:
-            jsonData = {'code':StatusCode.HTTP_400_BAD_REQUEST.value, 'message':e.args[1]}
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+            json_data = self.queryConnectionPool.removeDoctorFromHospital(doctorID, hospitalID)
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def SpecializationList(self,request):
         hospitalID = request.POST.get('hospital_id',None)
         if hospitalID is not None:
             hospitalID = int(hospitalID)
-            jsonData = Specialization.getSpecializationListBy(hospitalID)
+            json_data = Specialization.getSpecializationListBy(hospitalID)
         else:
-            jsonData = Specialization.getSpecializationList()
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+            json_data = Specialization.getSpecializationList()
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def HospitalRegistration(self,request):
@@ -92,12 +99,11 @@ class API:
             password = request.POST['password']
             licenseNo = request.POST['license_no']
             logo = request.POST.get('logo',None)
-            jsonData = self.queryConnectionPool.executeRegister(request,name, phone, password, licenseNo,logo=logo)
-        except IntegrityError as e:
-            jsonData = {'code':StatusCode.HTTP_400_BAD_REQUEST.value, 'message':e.args[1]}
-        except:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+            json_data = self.queryConnectionPool.executeRegister(request,name, phone, password, licenseNo,logo=logo)
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def UpdateInfo(self,request):
@@ -111,36 +117,34 @@ class API:
             logo = request.POST.get('logo',None)
             email = request.POST.get('email', None)
             address = request.POST.get('address', None)
-            jsonData = HospitalService.infoUpdate(request=request,name=name,id=id,
+            json_data = HospitalService.infoUpdate(request=request,name=name,id=id,
                                                            phone=phone,password=password,
                                                            lat=lat,lng=lng,
                                                            logo=logo,email=email,
                                                            address=address)
-        except IntegrityError as e:
-            jsonData = {'code':StatusCode.HTTP_400_BAD_REQUEST.value, 'message':e.args[1]}
-        except:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
 
     @csrf_exempt
     def CreateSpecialization(self,request):
         name = request.POST['name']
-        jsonData = Specialization.createSpecialization(name=name)
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+        json_data = Specialization.createSpecialization(name=name)
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def ConvertExistingNonHashedPasswordToHash(self,request):
         try:
             password = request.POST.get('password',None)
             phone = request.POST.get('phone', None)
-            jsonData = self.queryConnectionPool.updateExistingNonHashedPasswordToHash(password=password,phone=phone)
-        except IntegrityError as e:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
-        except:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': "missing required param"}
+            json_data = self.queryConnectionPool.updateExistingNonHashedPasswordToHash(password=password,phone=phone)
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
 
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def GetDoctorAppointment(self,request):
@@ -148,31 +152,31 @@ class API:
             doctorID = int(request.POST['doctor_id'])
             hospitalID = int(request.POST['hospital_id'])
             date = request.POST.get('date',None)
-            jsonData = self.queryConnectionPool.getAppointmentsby(doctorID=doctorID,hospitalID=hospitalID,date=date)
-        except IntegrityError as e:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
-        except:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': "missing required param"}
+            json_data = self.queryConnectionPool.getAppointmentsby(doctorID=doctorID,hospitalID=hospitalID,date=date)
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
 
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def AddSpecializationToHospital(self,request):
         specializationID = request.POST.get('specialization_id',None)
         specialization = request.POST.get('specialization',None)
         hospitalID = int(request.POST['hospital_id'])
-        jsonData = Specialization.attachSpecializationToHospital(specializationID=specializationID,specializationName=specialization,hospitalID=hospitalID)
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+        json_data = Specialization.attachSpecializationToHospital(specializationID=specializationID,specializationName=specialization,hospitalID=hospitalID)
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def RemoveSpecializationFromHospital(self,request):
         try:
             specializationID = int(request.POST['specialization_id'])
             hospitalID = int(request.POST['hospital_id'])
-            jsonData = self.queryConnectionPool.detachSpecializationFromHospital(specializationID=specializationID,hospitalID=hospitalID)
-        except IntegrityError as e:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+            json_data = self.queryConnectionPool.detachSpecializationFromHospital(specializationID=specializationID,hospitalID=hospitalID)
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def UpdateDoctorInfoInHospital(self,request):
@@ -188,15 +192,14 @@ class API:
             phone = request.POST.get('phone',None)
             maxPat = request.POST.get('max_patient_per_day',None)
             maxPatientPerDay = maxPat if maxPat == None else int(maxPat)
-            jsonData = self.queryConnectionPool.updateDoctorInfoForHospital(doctorID, hospitalID, phone, visitFee,
+            json_data = self.queryConnectionPool.updateDoctorInfoForHospital(doctorID, hospitalID, phone, visitFee,
                                                                             startTime, endTime, startDay, endDay,
                                                                           roomNo, maxPatientPerDay)
-        except IntegrityError as e:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
-        except:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': "something went wrong"}
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
 
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def RemoveDoctorScheduleFromHospital(self,request):
@@ -204,13 +207,12 @@ class API:
             doctorID = int(request.POST['doctor_id'])
             hospitalID = int(request.POST['hospital_id'])
             weekID = int(request.POST['week_id'])
-            jsonData = self.queryConnectionPool.removeDoctorScheduleFromHospital(doctorID, hospitalID, weekID)
-        except IntegrityError as e:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
-        except:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': "missing required param"}
+            json_data = self.queryConnectionPool.removeDoctorScheduleFromHospital(doctorID, hospitalID, weekID)
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
 
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def UpdateDoctorScheduleForHospital(self,request):
@@ -223,13 +225,12 @@ class API:
             weekID = int(request.POST['week_id'])
             startTime = request.POST.get('start_time',None)
             endTime = request.POST.get('end_time',None)
-            jsonData = self.queryConnectionPool.updateDoctorScheduleForHospital(isAvailable=isAvailable, hospitalID=hospitalID,doctorID=doctorID,weekID=weekID,startTime=startTime,endTime=endTime)
-        except IntegrityError as e:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
-        except:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': "missing required param"}
+            json_data = self.queryConnectionPool.updateDoctorScheduleForHospital(isAvailable=isAvailable, hospitalID=hospitalID,doctorID=doctorID,weekID=weekID,startTime=startTime,endTime=endTime)
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
 
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def AddDoctorScheduleDateToHospital(self,request):
@@ -240,26 +241,24 @@ class API:
             date = request.POST.get('date',None)
             startTime = request.POST.get('start_time',None)
             endTime = request.POST.get('end_time',None)
-            jsonData = self.queryConnectionPool.executeAddDoctorScheduleDateToHospital(doctorID, hospitalID, weekID,
+            json_data = self.queryConnectionPool.executeAddDoctorScheduleDateToHospital(doctorID, hospitalID, weekID,
                                                                                    startTime,endTime)
-        except IntegrityError as e:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
-        except:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': "missing required param"}
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
 
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def DoctorSchedules(self,request):
         try:
             doctorID = int(request.POST['doctor_id'])
             hospitalID = int(request.POST['hospital_id'])
-            jsonData = self.queryConnectionPool.getDoctorsScheduleFromHospital(doctorID, hospitalID)
-        except IntegrityError as e:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
-        except:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+            json_data = self.queryConnectionPool.getDoctorsScheduleFromHospital(doctorID, hospitalID)
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def CreateDoctorAppointment(self,request):
@@ -273,23 +272,23 @@ class API:
             patientID = request.POST.get('patient_id',None)
             if patientID !=None:
                 patientID = int(patientID)
-            jsonData = self.queryConnectionPool.executeDoctorAppointment(doctorID, hospitalID, visitTime, visitDate, patientName,
+            json_data = self.queryConnectionPool.executeDoctorAppointment(doctorID, hospitalID, visitTime, visitDate, patientName,
                                                                     patientPhone, patientID)
-        except IntegrityError as e:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def DoctorProfile(self,request):
         try:
             doctorID = int(request.POST['doctor_id'])
             hospitalID = int(request.POST['hospital_id'])
-            jsonData = self.queryConnectionPool.getDoctorProfileBy(hospitalID, doctorID,request)
-        except IntegrityError as e:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
-        except:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': "missing required param"}
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+            json_data = self.queryConnectionPool.getDoctorProfileBy(hospitalID, doctorID,request)
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def UpdateDoctorProfile(self,request):
@@ -308,15 +307,14 @@ class API:
                 specializationID = int(specializationID)
             specialization = request.POST.get('specialization')
             photo = request.POST.get('photo',None)
-            jsonData = self.queryConnectionPool.updateDoctorProfileBy(hospitalID, doctorID,
+            json_data = self.queryConnectionPool.updateDoctorProfileBy(hospitalID, doctorID,
                                                                       name,degrees,visitFee,
                                                                       roomNo,maxPatientPerDay,
                                                                       specializationID,specialization,photo)
-        except IntegrityError as e:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
-        except:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': "missing required param"}
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
     def GetWeekLists(self,request):
@@ -324,13 +322,12 @@ class API:
             doctorID = request.POST.get('doctor_id',None)
             hospitalID = request.POST.get('hospital_id',None)
             if hospitalID !=None and doctorID !=None:
-                jsonData = self.queryConnectionPool.getAllWeeksBy(hospitalID=hospitalID,doctorID=doctorID)
+                json_data = self.queryConnectionPool.getAllWeeksBy(hospitalID=hospitalID,doctorID=doctorID)
             else:
-                jsonData = self.queryConnectionPool.getAllWeeks()
-        except IntegrityError as e:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': e.args[1]}
-        except:
-            jsonData = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+                json_data = self.queryConnectionPool.getAllWeeks()
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
 
-        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
 

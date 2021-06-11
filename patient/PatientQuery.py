@@ -4,6 +4,7 @@ from .models.PatientData import PatientData
 from django.core.exceptions import ObjectDoesNotExist
 from HealthBackendProject.StatusCode import StatusCode
 from HealthBackendProject.HashPassword import HashPassword
+from HealthBackendProject.Service import ExceptionLogger
 
 class PatientQuery:
     table = "patient"
@@ -21,6 +22,10 @@ class PatientQuery:
             patient = PatientData(name=name, phone=phone, password=passwd,notification_reg_token=notification_reg_token)
             patient.save()
             json_data = {'code': StatusCode.HTTP_200_OK.value, "id": patient.id}
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+
         return json_data
 
     def login(self, phone, password,notification_reg_token):
@@ -37,6 +42,10 @@ class PatientQuery:
                 data.save()
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'user not found'}
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+
         return json_data
 
     def removeUser(self,phone,password):
@@ -50,6 +59,9 @@ class PatientQuery:
                 json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'password doesnot match'}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'user not found'}
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
 
         return json_data
 
