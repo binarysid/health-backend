@@ -70,7 +70,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'HealthBackendProject.Error_Handler.ErrorHandlerMiddleware'
 ]
 
 ROOT_URLCONF = 'HealthBackendProject.urls'
