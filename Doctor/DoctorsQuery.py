@@ -19,9 +19,9 @@ class DoctorsQuery:
     def __init__(self,logger):
         self.logger = logger
 
-    def getDoctorObj(self,data,request):
+    def getDoctorObj(self,data,request,profile_completion_percentage):
         responseObj = dict(name=data.name, phone=data.phone,
-                               id=data.id)
+                               id=data.id,profile_completion_percentage=profile_completion_percentage)
         if data.photo:
             responseObj['photo'] = request.build_absolute_uri(data.photo.url)
         if data.address:
@@ -41,19 +41,18 @@ class DoctorsQuery:
             if hospitalID != None:
                 filteredDoctor = HospitalDoctorData.objects.filter(hospital_id=hospitalID)
                 for doctor in filteredDoctor:
-                    if HospitalService.doctor_profile_completion_ratio(hospital_id=hospitalID,doctor_id=doctor.doctor_id)<100:
-                        continue
+                    profile_completion_ratio = HospitalService.doctor_profile_completion_ratio(hospital_id=hospitalID,doctor_id=doctor.doctor_id)
                     if specializationID is not None:
                         data = self.getDoctorBySpecialization(doctorID=doctor.doctor_id,specializationID=specializationID)
                         if data is None:
                             continue
                     else:
                         data = DoctorData.objects.get(id=doctor.doctor_id)
-                    doctors.append(self.getDoctorObj(data,request))
+                    doctors.append(self.getDoctorObj(data,request,profile_completion_ratio))
             else:
                 data = DoctorData.objects.all()
                 for doctor in data:
-                    doctors.append(self.getDoctorObj(doctor,request))
+                    doctors.append(self.getDoctorObj(doctor,request,100))
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'success', 'data': doctors}
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'no doctor found'}
