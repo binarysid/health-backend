@@ -12,6 +12,7 @@ from Hospital.models.HospitalDoctorData import HospitalDoctorData
 from Hospital.HospitalQuery import HospitalQuery
 from HealthBackendProject import Utility
 from HealthBackendProject.Service import ExceptionLogger
+from Hospital.Services import HospitalService
 
 class DoctorsQuery:
 
@@ -37,10 +38,11 @@ class DoctorsQuery:
         json_data = {}
         try:
             doctors = []
-            self.logger.debug('entered try')
             if hospitalID != None:
                 filteredDoctor = HospitalDoctorData.objects.filter(hospital_id=hospitalID)
                 for doctor in filteredDoctor:
+                    if HospitalService.doctor_profile_completion_ratio(hospital_id=hospitalID,doctor_id=doctor.doctor_id)<100:
+                        continue
                     if specializationID is not None:
                         data = self.getDoctorBySpecialization(doctorID=doctor.doctor_id,specializationID=specializationID)
                         if data is None:

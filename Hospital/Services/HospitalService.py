@@ -27,7 +27,8 @@ def doctor_profile_completion_ratio(hospital_id,doctor_id):
     schedule = HospitalDoctorScheduleData.objects.filter(hospital_id=hospital_id,doctor_id=doctor_id)
     if len(schedule) > 0:
         match_status += 1
-    return int((match_status/len(rules))*100)
+    ratio = int((match_status/len(rules))*100)
+    return ratio
 
 def get_doctor_profile_completion(hospital_id,doctor_id):
     return {'code': StatusCode.HTTP_200_OK.value, 'completion_ratio': doctor_profile_completion_ratio(hospital_id=hospital_id,doctor_id=doctor_id)}
