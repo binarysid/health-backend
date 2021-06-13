@@ -5,6 +5,7 @@ from .API import API
 
 api = API()
 urlpatterns = [
+        path('api/doctorprofilestatus', api.GetDoctorProfileCompletionRatio, name=''),
         path('api/infoupdate', api.UpdateInfo, name=''),
         path('api/cancelappointment', api.CancelAppointment, name=''),
         path('api/createweeks', api.createWeekList, name=''),

@@ -6,7 +6,32 @@ from django.db import connection, IntegrityError
 from HealthBackendProject import Utility
 from Hospital.models.DoctorAppointmentData import DoctorAppointmentData
 from Hospital.models.HospitalDoctorScheduleData import HospitalDoctorScheduleData
+from Hospital.models.HospitalDoctorData import HospitalDoctorData
+from Doctor.models.DoctorData import DoctorData
+
 dateFormate = '%Y-%m-%d'
+
+def doctor_profile_completion_ratio(hospital_id,doctor_id):
+    rules = ['name','degree','schedule','max_patient']
+    match_status = 0
+    doctor_info = DoctorData.objects.get(id=doctor_id)
+    if doctor_info is not  None:
+        if doctor_info.name is not None:
+            match_status +=1
+        if doctor_info.degrees is not None:
+            match_status += 1
+    max_patient = HospitalDoctorData.objects.get(hospital_id=hospital_id,
+                                                     doctor_id=doctor_id).max_patient_per_day
+    if max_patient is not None and max_patient > 0:
+        match_status += 1
+    schedule = HospitalDoctorScheduleData.objects.filter(hospital_id=hospital_id,doctor_id=doctor_id)
+    if len(schedule) > 0:
+        match_status += 1
+    return int((match_status/len(rules))*100)
+
+def get_doctor_profile_completion(hospital_id,doctor_id):
+    return {'code': StatusCode.HTTP_200_OK.value, 'completion_ratio': doctor_profile_completion_ratio(hospital_id=hospital_id,doctor_id=doctor_id)}
+
 def getAppointmentsby(patientID):
     json_data = {}
     try:

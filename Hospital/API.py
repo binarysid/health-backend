@@ -18,6 +18,14 @@ class API:
         self.queryConnectionPool = HospitalQuery(logger=self.logger)
 
     @csrf_exempt
+    def GetDoctorProfileCompletionRatio(self,request):
+        # version = request.headers['version']
+        doctorID = int(request.POST['doctor_id'])
+        hospitalID = int(request.POST['hospital_id'])
+        json_data = HospitalService.get_doctor_profile_completion(hospital_id=hospitalID,doctor_id=doctorID)
+        return HttpResponse(json.dumps(json_data), content_type="application/json")
+
+    @csrf_exempt
     def CancelAppointment(self,request):
         # version = request.headers['version']
         doctorID = int(request.POST['doctor_id'])
