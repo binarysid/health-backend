@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from HealthBackendProject.StatusCode import StatusCode
 from HealthBackendProject.HashPassword import HashPassword
 from HealthBackendProject.Service import ExceptionLogger
+from HealthBackendProject import Utility
 
 class PatientQuery:
     table = "patient"
@@ -28,13 +29,17 @@ class PatientQuery:
 
         return json_data
 
-    def login(self, phone, password,notification_reg_token):
+    def login(self,request, phone, password,notification_reg_token):
         json_data = {}
         try:
             data = PatientData.objects.get(phone=phone)
             json_data = {}
             if HashPassword.isValidPassword(password, data.password):
-                json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id, 'name': data.name}
+                json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id, 'name': data.name,
+                             'address':data.address,
+                             'lat':data.lat,'lng':data.lng}
+                if data.photo:
+                    json_data['photo'] = request.build_absolute_uri(data.photo.url)
             else:
                 json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, "message": 'password doesnt match'}
             if data.notification_reg_token != notification_reg_token:
@@ -42,6 +47,41 @@ class PatientQuery:
                 data.save()
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'user not found'}
+        except Exception as e:
+            ExceptionLogger.track(e=e)
+            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
+
+        return json_data
+
+    def infoUpdate(self,name, id, password, email,
+                   nid, address,lat,lng,photo,phone):
+        json_data = {}
+        try:
+            data = PatientData.objects.get(id=id)
+            if photo is not None:
+                if data.photo:
+                    Utility.removeFile(data.photo.path)
+                data.photo = Utility.convertBase64ToImageFile(photo, id=id)
+            if name != None:
+                data.name = name
+            if phone != None:
+                data.phone = phone
+            if password != None:
+                data.password = HashPassword.createPassword(password)
+            if email != None:
+                data.email = email
+            if nid != None:
+                data.n_id = nid
+            if address != None:
+                data.address = address
+            if lat != None:
+                data.lat = lat
+            if lng != None:
+                data.lng = lng
+            data.save()
+            json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'successfully updated info'}
+        except ObjectDoesNotExist:
+            json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'user not found'}
         except Exception as e:
             ExceptionLogger.track(e=e)
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
