@@ -37,7 +37,7 @@ class PatientQuery:
             if HashPassword.isValidPassword(password, data.password):
                 json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id, 'name': data.name,
                              'address':data.address,
-                             'lat':data.lat,'lng':data.lng}
+                             'lat':data.lat,'lng':data.lng,'email':data.email}
                 if data.photo:
                     json_data['photo'] = request.build_absolute_uri(data.photo.url)
             else:
