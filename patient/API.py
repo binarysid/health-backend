@@ -54,5 +54,5 @@ class API:
         json_data = self.queryConnectionPool.infoUpdate(id=id,name=name,password=password,
                                                         email=email,address=address,
                                                         lat=lat,lng=lng,photo=photo,
-                                                        nid=nid,phone=phone)
+                                                        nid=nid,phone=phone,request=request)
         return HttpResponse(json.dumps(json_data), content_type="application/json")

@@ -29,17 +29,20 @@ class PatientQuery:
 
         return json_data
 
+    def getPatientObj(self,status,data,request):
+        responseObj = dict(code= status,message = 'success', id= data.id, name= data.name,
+                             address=data.address,lat=data.lat,lng=data.lng,email=data.email)
+        if data.photo:
+            responseObj['photo'] = request.build_absolute_uri(data.photo.url)
+        return responseObj
+
     def login(self,request, phone, password,notification_reg_token):
         json_data = {}
         try:
             data = PatientData.objects.get(phone=phone)
             json_data = {}
             if HashPassword.isValidPassword(password, data.password):
-                json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id, 'name': data.name,
-                             'address':data.address,
-                             'lat':data.lat,'lng':data.lng,'email':data.email}
-                if data.photo:
-                    json_data['photo'] = request.build_absolute_uri(data.photo.url)
+                json_data = self.getPatientObj(StatusCode.HTTP_200_OK.value,data=data,request=request)
             else:
                 json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, "message": 'password doesnt match'}
             if data.notification_reg_token != notification_reg_token:
@@ -54,7 +57,7 @@ class PatientQuery:
         return json_data
 
     def infoUpdate(self,name, id, password, email,
-                   nid, address,lat,lng,photo,phone):
+                   nid, address,lat,lng,photo,phone,request):
         json_data = {}
         try:
             data = PatientData.objects.get(id=id)
@@ -79,7 +82,7 @@ class PatientQuery:
             if lng != None:
                 data.lng = lng
             data.save()
-            json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'successfully updated info'}
+            json_data = self.getPatientObj(status=StatusCode.HTTP_200_OK.value,data=data,request=request)
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'user not found'}
         except Exception as e:
