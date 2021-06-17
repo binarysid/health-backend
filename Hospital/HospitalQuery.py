@@ -171,6 +171,7 @@ class HospitalQuery:
         json_data = {}
         try:
             info = HospitalDoctorData.objects.get(hospital_id=hospitalID,doctor_id=doctorID)
+            specialization = info.doctor.specialization.specialization
             availableDays = self.getAvailableWeekBy(doctorID=doctorID,hospitalID=hospitalID);
             scheduleDays = ' '.join(availableDays)
             data = {'name':info.doctor.name,'phone':info.doctor.phone,
@@ -183,7 +184,8 @@ class HospitalQuery:
                     'room_no':info.room_no if info.room_no is not None else '',
                     'degrees':info.doctor.degrees if info.doctor.degrees is not None else '',
                     'max_patient_per_day':info.max_patient_per_day if info.max_patient_per_day is not None else 0,
-                    'photo':request.build_absolute_uri(info.doctor.photo.url) if info.doctor.photo else ''
+                    'photo':request.build_absolute_uri(info.doctor.photo.url) if info.doctor.photo else '',
+                    'specialization':specialization if specialization else ''
                     }
             json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'success', 'data': data}
         except ObjectDoesNotExist:
