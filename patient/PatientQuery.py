@@ -31,7 +31,7 @@ class PatientQuery:
 
     def getPatientObj(self,status,data,request):
         responseObj = dict(code= status,message = 'success', id= data.id, name= data.name,
-                             address=data.address,lat=data.lat,lng=data.lng,email=data.email)
+                             phone=data.phone,address=data.address,lat=data.lat,lng=data.lng,email=data.email)
         if data.photo:
             responseObj['photo'] = request.build_absolute_uri(data.photo.url)
         return responseObj
