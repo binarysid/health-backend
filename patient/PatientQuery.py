@@ -45,9 +45,9 @@ class PatientQuery:
                 json_data = self.getPatientObj(StatusCode.HTTP_200_OK.value,data=data,request=request)
             else:
                 json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, "message": 'password doesnt match'}
-            # if data.notification_reg_token != notification_reg_token:
-            #     data.notification_reg_token = notification_reg_token
-            #     data.save()
+            if data.notification_reg_token != notification_reg_token:
+                data.notification_reg_token = notification_reg_token
+                data.save()
         except ObjectDoesNotExist:
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'user not found'}
         except Exception as e:
