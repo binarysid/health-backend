@@ -78,9 +78,9 @@ class PatientQuery:
             if address != None:
                 data.address = address
             if lat != None:
-                data.lat = lat
+                data.lat = float(lat)
             if lng != None:
-                data.lng = lng
+                data.lng = float(lng)
             data.save()
             json_data = self.getPatientObj(status=StatusCode.HTTP_200_OK.value,data=data,request=request)
         except ObjectDoesNotExist:
