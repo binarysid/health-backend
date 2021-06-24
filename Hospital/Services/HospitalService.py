@@ -8,6 +8,7 @@ from Hospital.models.DoctorAppointmentData import DoctorAppointmentData
 from Hospital.models.HospitalDoctorScheduleData import HospitalDoctorScheduleData
 from Hospital.models.HospitalDoctorData import HospitalDoctorData
 from Doctor.models.DoctorData import DoctorData
+from HealthBackendProject.Service import ExceptionLogger
 
 dateFormate = '%Y-%m-%d'
 
@@ -39,19 +40,21 @@ def getAppointmentsby(patientID):
         appointments = []
         data = DoctorAppointmentData.objects.filter(patient_id=patientID).order_by("visit_date")
         for index, item in enumerate(data):
-            schedules = HospitalDoctorScheduleData.objects.filter(doctor_id=item.doctor.id,hospital_id=item.hospital.id)
+            schedules = HospitalDoctorScheduleData.objects.filter(doctor_id=item.doctor_id,hospital_id=item.hospital_id)
             schedule = schedules[0]
+            specialization = item.doctor.specialization.specialization
             appointments.append(dict(id=item.id,
                                         date=item.visit_date.strftime(dateFormate), serial=item.serial_no,
                                         status=item.status,hospital=item.hospital.name,doctor=item.doctor.name,
                                         start_time=schedule.visit_start_time,end_time=schedule.visit_end_time,
-                                        doctor_contact=item.doctor.phone,hospital_contact=item.hospital.phone
+                                        doctor_contact=item.doctor.phone,hospital_contact=item.hospital.phone,specialization=specialization
                                      ))
         json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'success', 'data': appointments}
 
     except ObjectDoesNotExist:
         json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'no appointment found'}
-    except:
+    except Exception as e:
+        ExceptionLogger.track(e=e)
         json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'somehting went wrong'}
     return json_data
 
@@ -84,7 +87,8 @@ def infoUpdate(request,name, id, phone, password, email,
         json_data = {'code': StatusCode.HTTP_200_OK.value, 'message': 'successfully updated info','data':getData(request=request,item=data)}
     except ObjectDoesNotExist:
         json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, 'message': 'user not found'}
-    except:
+    except Exception as e:
+        ExceptionLogger.track(e=e)
         json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
     return json_data
 
