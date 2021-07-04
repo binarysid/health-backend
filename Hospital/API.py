@@ -1,5 +1,5 @@
 from django.db import connection,IntegrityError
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from .HospitalQuery import HospitalQuery
 import json
 from django.views.decorators.csrf import csrf_exempt

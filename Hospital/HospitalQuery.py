@@ -20,6 +20,7 @@ from HealthBackendProject.Service import PushNotification
 from patient.models.PatientData import PatientData
 from HealthBackendProject.Service import ExceptionLogger
 
+
 class HospitalQuery:
     timeFormat = '%H:%M'
     timeFormatAmPm = '%H:%M %p'

@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'Hospital',
     'Doctor',
     'patient',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

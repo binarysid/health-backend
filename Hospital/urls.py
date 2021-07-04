@@ -1,7 +1,7 @@
 from django.urls import path, include
 from . import views
 from .API import API
-
+from Hospital.Services import Hospital
 
 api = API()
 urlpatterns = [
@@ -9,7 +9,7 @@ urlpatterns = [
         path('api/infoupdate', api.UpdateInfo, name=''),
         path('api/cancelappointment', api.CancelAppointment, name=''),
         path('api/createweeks', api.createWeekList, name=''),
-        path('api/hospitals', api.HospitalList, name=''),
+        path('api/hospitals', Hospital.HospitalList.as_view(), name=''),
         path('api/weeklist', api.GetWeekLists, name=''),
         path('api/updateweek', api.UpdateWeek, name=''),
         path('api/doctorappointment', api.CreateDoctorAppointment, name=''),
