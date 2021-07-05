@@ -43,16 +43,6 @@ class API:
         return HttpResponse(json.dumps(json_data), content_type="application/json")
 
     @csrf_exempt
-    def HospitalList(self,request):
-        # print()
-        try:
-            json_data = self.queryConnectionPool.getHospitalList(request=request)
-        except Exception as e:
-            ExceptionLogger.track(e=e)
-            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
-        return HttpResponse(json.dumps(json_data), content_type="application/json")
-
-    @csrf_exempt
     def createWeekList(self,request):
         self.queryConnectionPool.createWeekList()
 

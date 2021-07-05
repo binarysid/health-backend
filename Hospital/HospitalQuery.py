@@ -381,20 +381,6 @@ class HospitalQuery:
 
         return json_data
 
-    def getHospitalList(self,request):
-        try:
-            data = HospitalData.objects.all()
-            hospitals = []
-            for item in data:
-                hospitals.append(HospitalService.getData(request=request,item=item))
-            return {'code': StatusCode.HTTP_200_OK.value, 'message': 'success', 'data': hospitals}
-        except ObjectDoesNotExist:
-            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'no hospital found'}
-        except Exception as e:
-            json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
-            ExceptionLogger.track(e=e)
-        return json_data
-
     def executeRegister(self,request,name,phone,password,licenseNo,logo):
         json_data = {}
         try:
