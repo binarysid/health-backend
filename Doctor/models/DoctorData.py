@@ -9,7 +9,7 @@ class DoctorData(models.Model):
     address = models.CharField(max_length=255, blank=True, null=True)
     email = models.CharField(max_length=255, blank=True, null=True)
     degrees = models.CharField(max_length=255, blank=True, null=True)
-    password = models.CharField(max_length=255)
+    password = models.CharField(max_length=255, blank=True, null=True)
     phone = models.CharField(unique=True, max_length=255)
     nid = models.CharField(max_length=255, blank=True, null=True)
     specialization = models.ForeignKey(SpecializationData, on_delete=models.DO_NOTHING, null=True)
