@@ -113,8 +113,10 @@ class DoctorsQuery:
             data = DoctorData.objects.get(reg_no=regNo,phone=phone)
             json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value, "message": 'account with this reg_no or phone already exists'}
         except ObjectDoesNotExist:
-            passwd = HashPassword.createPassword(password)
-            data = DoctorData(name=name,reg_no=regNo,password=passwd,phone=phone,specialization=self.getSpecializationObj(specializationID))
+            data = DoctorData(name=name,reg_no=regNo,phone=phone,specialization=self.getSpecializationObj(specializationID))
+            if password is not None:
+                passwd = HashPassword.createPassword(password)
+                data.password = passwd
             data.save()
             if hospitalID is not None:
                 response = self.addDoctorToHospital(hospitalID=hospitalID,doctorID=data.id,hospitalAPIObj=hospitalAPI)

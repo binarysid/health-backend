@@ -61,7 +61,6 @@ class API:
 
     @csrf_exempt
     def DoctorRegistration(self,request):
-        self.logger.debug('reg api initiated')
         name = request.POST.get('name', None)
         phone = request.POST.get('phone', None)
         password = request.POST.get('password', None)
