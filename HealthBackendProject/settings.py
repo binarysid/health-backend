@@ -29,12 +29,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'django-insecure-o5nh&1c^2h3a9qwd)8imwvap4y_pn^^lm45t1o74v*zj85@k#+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
 PushNotification.initialize()
+
+
 
 sentry_sdk.init(
     dsn="https://e356af10476c49eda433ffd1d2fd878f@o813203.ingest.sentry.io/5805883",
@@ -100,6 +102,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -113,8 +116,7 @@ ROOT_URLCONF = 'HealthBackendProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -184,6 +186,7 @@ MEDIA_ROOT = os.path.join(MediaDirGen.MEDIA_BASE_DIR, MediaDirGen.DIR)
 MEDIA_URL = f'/{MediaDirGen.DIR}'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
