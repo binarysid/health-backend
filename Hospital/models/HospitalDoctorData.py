@@ -13,8 +13,9 @@ class HospitalDoctorData(models.Model):
     visit_start_day = models.CharField(max_length=255, blank=True, null=True)
     visit_end_day = models.CharField(max_length=255, blank=True, null=True)
     room_no = models.CharField(max_length=255, blank=True, null=True)
-    max_patient_per_day = models.IntegerField(blank=True,null=True)
+    time_spent_per_patient = models.IntegerField(blank=True,null=True)
 
     class Meta:
         # managed = False
         db_table = 'hospital_doctor'
+        unique_together = (('doctor', 'hospital'),)

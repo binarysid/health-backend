@@ -4,12 +4,17 @@ class Response(Response):
     def __init__(self, data=None, message=None, code=None, status=None,
                 template_name=None, headers=None,
                 exception=False, content_type=None):
-
-        data_content = {
-            'code': code,
-            'message': message,
-            'data': data,
-        }
+        if data is not None:
+            data_content = {
+                'code': code,
+                'message': message,
+                'data': data,
+            }
+        else:
+            data_content = {
+                'code': code,
+                'message': message,
+            }
         super(Response, self).__init__(
             data=data_content,
             status=status,

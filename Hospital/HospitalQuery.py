@@ -1,7 +1,6 @@
 import pymysql
 
 from HealthBackendProject import Utility
-from HealthBackendProject.StatusCode import StatusCode
 from Doctor.models.DoctorData import DoctorData
 from django.db import connection,IntegrityError
 from datetime import datetime,timedelta
@@ -378,23 +377,6 @@ class HospitalQuery:
         except Exception as e:
             ExceptionLogger.track(e=e)
             json_data = {'code': StatusCode.HTTP_400_BAD_REQUEST.value, 'message': 'something went wrong'}
-
-        return json_data
-
-    def executeRegister(self,request,name,phone,password,licenseNo,logo):
-        json_data = {}
-        try:
-            data = HospitalData.objects.get(license_no=licenseNo, phone=phone)
-            json_data = {'code': StatusCode.HTTP_404_NOT_FOUND.value,
-                         "message": 'account with this license_no or phone already exists'}
-        except ObjectDoesNotExist:
-            passwd = HashPassword.createPassword(password)
-            data = HospitalData(name=name, password=passwd,license_no=licenseNo, phone=phone)
-            data.save()
-            json_data = {'code': StatusCode.HTTP_200_OK.value, "id": data.id,'data':HospitalService.getData(request=request,item=data)}
-        except Exception as e:
-            ExceptionLogger.track(e=e)
-            json_data = {'code': StatusCode.HTTP_403_FORBIDDEN.value, "message": 'Something went wrong'}
 
         return json_data
 

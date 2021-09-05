@@ -16,7 +16,7 @@ admin.site.site_header = 'GanymedeCube'
 
 class StateAdmin(admin.ModelAdmin):
     list_display = ('name','created_on','updated_on')
-
+    list_filter = ('name','created_on')
     # def make_active(modeladmin, request, queryset):
     #     queryset.update(is_active=1) # is_active is the db field name
     #     messages.success(request, "Selected Record(s) Marked as Active Successfully !!")

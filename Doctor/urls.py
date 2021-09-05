@@ -1,13 +1,12 @@
 from django.urls import path, include
-from . import views
-from .API import API
-
-api = API()
+from Doctor.Service.Doctor import Doctor
+#from rest_framework import routers
+from Doctor.Service import Api
+# router = routers.DefaultRouter()
+# router.register('api/doctorlist',Doctor,basename='doctorlist')
 urlpatterns = [
-        path('api/register', api.DoctorRegistration, name=''),
-        path('api/login', api.DoctorLogin, name='doctorlogin'),
-        path('api/infoupdate', api.DoctorInfoUpdate, name=''),
-        path('api/degreeadd', api.DoctorDegreeAdd, name=''),
-        path('api/list', api.DoctorList, name=''),
-        path('api/remove', api.RemoveDoctor, name=''),
+        path('api/list', Doctor.as_view(
+                {'get': 'list','post':'create','put':'update','delete':'destroy'},
+        )),
+        path('api/login', Api.DoctorLogin, name='doctorlogin'),
 ]

@@ -1,33 +1,29 @@
-from django.urls import path, include
-from . import views
-from .API import API
-from Hospital.Services import Hospital
+from django.urls import path
+from Hospital.Services import Hospital, API
 
-api = API()
 urlpatterns = [
-        path('api/doctorprofilestatus', api.GetDoctorProfileCompletionRatio, name=''),
-        path('api/infoupdate', api.UpdateInfo, name=''),
-        path('api/cancelappointment', api.CancelAppointment, name=''),
-        path('api/createweeks', api.createWeekList, name=''),
+        path('api/doctorprofilestatus', API.GetDoctorProfileCompletionRatio, name=''),
+        path('api/cancelappointment', API.CancelAppointment, name=''),
+        path('api/createweeks', API.createWeekList, name=''),
         path('api/hospitals', Hospital.HospitalList.as_view(), name='hospitallist'),
-        path('api/weeklist', api.GetWeekLists, name=''),
-        path('api/updateweek', api.UpdateWeek, name=''),
-        path('api/doctorappointment', api.CreateDoctorAppointment, name=''),
-        path('api/getappointments', api.GetDoctorAppointment, name=''),
-        path('api/convertexistingnonhashedpasswordtohash', api.ConvertExistingNonHashedPasswordToHash, name=''),
-        path('api/doctorschedules', api.DoctorSchedules, name=''),
-        path('api/adddoctorscheduledatetohospital', api.AddDoctorScheduleDateToHospital, name=''),
-        path('api/removedoctorschedulefromhospital', api.RemoveDoctorScheduleFromHospital, name=''),
-        path('api/updatedoctorscheduleforhospital', api.UpdateDoctorScheduleForHospital, name=''),
-        path('api/updatedoctorinfoforhospital', api.UpdateDoctorInfoInHospital, name=''),
-        path('api/adddoctortohospital', api.AddDoctor, name=''),
-        path('api/removedoctorfromhospital', api.removeDoctor, name=''),
-        path('api/createspecialization', api.CreateSpecialization, name=''),
-        path('api/addhospitalspecialization', api.AddSpecializationToHospital, name=''),
-        path('api/removehospitalspecialization', api.RemoveSpecializationFromHospital, name=''),
-        path('api/registerhospital', api.HospitalRegistration, name=''),
-        path('api/specializationlist', api.SpecializationList, name=''),
-        path('api/doctorProfileBy', api.DoctorProfile, name=''),
-        path('api/login', api.Login, name=''),
-        path('api/updateDoctorProfile', api.UpdateDoctorProfile, name='')
+        path('api/weeklist', API.GetWeekLists, name=''),
+        path('api/updateweek', API.UpdateWeek, name=''),
+        path('api/doctorappointment', API.CreateDoctorAppointment, name=''),
+        path('api/getappointments', API.GetDoctorAppointment, name=''),
+        path('api/convertexistingnonhashedpasswordtohash', API.ConvertExistingNonHashedPasswordToHash, name=''),
+        path('api/doctorschedules', API.DoctorSchedules, name=''),
+        path('api/adddoctorscheduledatetohospital', API.AddDoctorScheduleDateToHospital, name=''),
+        path('api/removedoctorschedulefromhospital', API.RemoveDoctorScheduleFromHospital, name=''),
+        path('api/updatedoctorscheduleforhospital', API.UpdateDoctorScheduleForHospital, name=''),
+        path('api/updatedoctorinfoforhospital', API.UpdateDoctorInfoInHospital, name=''),
+        path('api/adddoctortohospital', API.AddDoctor, name=''),
+        path('api/removedoctorfromhospital', API.removeDoctor, name=''),
+        path('api/createspecialization', API.CreateSpecialization, name=''),
+        path('api/addhospitalspecialization', API.AddSpecializationToHospital, name=''),
+        path('api/removehospitalspecialization', API.RemoveSpecializationFromHospital, name=''),
+        path('api/registerhospital', API.HospitalRegistration, name=''),
+        path('api/specializationlist', API.SpecializationList, name=''),
+        path('api/doctorProfileBy', API.DoctorProfile, name=''),
+        path('api/login', API.Login, name=''),
+        path('api/updateDoctorProfile', API.UpdateDoctorProfile, name='')
     ]

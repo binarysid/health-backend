@@ -2,6 +2,7 @@ from django.db import models
 from .SpecializationData import SpecializationData
 from HealthBackendProject import MediaDirGen
 from django.utils import timezone
+from rest_framework import serializers
 
 class DoctorData(models.Model):
     id = models.AutoField(primary_key=True)
@@ -25,3 +26,4 @@ class DoctorData(models.Model):
         db_table = 'doctor'
         verbose_name = 'Doctor'
         verbose_name_plural = 'Doctors'
+

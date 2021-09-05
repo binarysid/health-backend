@@ -3,6 +3,7 @@ from Doctor.models.DoctorData import DoctorData
 from .HospitalData import HospitalData
 from patient.models.PatientData import PatientData
 from HealthBackendProject.AppointmentStatus import AppointmentStatus
+from HealthBackendProject import Utility
 
 class DoctorAppointmentData(models.Model):
     id = models.AutoField(primary_key=True)
