@@ -101,7 +101,7 @@ class Doctor(viewsets.ViewSet):
                 request.data['password'] = HashPassword.createPassword(request.data['password'])
             serializer = DoctorSerializer(data=request.data)
             if serializer.is_valid():
-                serializer.save()
+                serializer.save(specialization_id=request.data['specialization_id'])
                 if 'hospital_id' in request.data:
                     doctorId = DoctorData.objects.get(phone=request.data['phone']).id
                     response = HospitalService.doctorEntryOnHospitalList(hospitalID=request.data['hospital_id'],

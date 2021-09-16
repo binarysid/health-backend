@@ -8,7 +8,7 @@ from HealthBackendProject.HashPassword import HashPassword
 from django.core.exceptions import ObjectDoesNotExist
 from HealthBackendProject import Utility
 from django.core.exceptions import ObjectDoesNotExist
-
+# from rest_framework.parsers import JSONParser
 class HospitalList(generics.GenericAPIView,mixins.ListModelMixin):
     # queryset = HospitalData.objects.all()
     # serializer_class = HospitalSerializer
@@ -34,8 +34,9 @@ class HospitalList(generics.GenericAPIView,mixins.ListModelMixin):
         try:
             licenseNo = request.data['license_no']
             phone = request.data['phone']
-            data = HospitalData.objects.get(license_no=licenseNo, phone=phone)
-            return Response(code=status.HTTP_409_CONFLICT, message='account with this license_no or phone already exists')
+            name = request.data['name']
+            data = HospitalData.objects.get(license_no=licenseNo, phone=phone,name=name)
+            return Response(code=status.HTTP_409_CONFLICT, message='account with this name,license_no or phone already exists')
         except ObjectDoesNotExist:
             if not request.POST._mutable:
                 request.POST._mutable = True
@@ -52,8 +53,8 @@ class HospitalList(generics.GenericAPIView,mixins.ListModelMixin):
 
     def put(self,request):
         try:
-            phone = request.data['phone']
-            hospital = HospitalData.objects.get(phone=phone)
+            id = request.data['id']
+            hospital = HospitalData.objects.get(id=id)
             if 'logo' in request.data:
                 if hospital.logo:
                     Utility.removeFile(hospital.logo.path)
@@ -72,7 +73,7 @@ class HospitalList(generics.GenericAPIView,mixins.ListModelMixin):
                                           partial=True)  # By default, serializers must be passed values for all required fields or they will raise validation errors. So we must use the partial argument in order to allow partial updates.
             if serializer.is_valid():
                 serializer.save()
-                return Response(code=status.HTTP_200_OK, message='successfully updated info')
+                return Response(code=status.HTTP_200_OK, message='successfully updated info',data=serializer.data)
             else:
                 print(serializer.errors)
             return Response(code=status.HTTP_400_BAD_REQUEST, message='something went wrong')

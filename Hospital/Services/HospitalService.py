@@ -25,7 +25,7 @@ def cancelDoctorAppointment(doctorID, hospitalID, date):
         data = DoctorAppointmentData.objects.filter(hospital_id=hospitalID, doctor_id=doctorID,
                                                     visit_date=datetime.strptime(date, Utility.date_format_DMY).date())
         for appointment in data:
-            appointment.status = AppointmentStatus.CANCELLED
+            appointment.status = AppointmentStatus.CANCELLED.value
             appointment.save()
         PushNotification.send_appntment_cancel_notification(appointment_info=data)
         json_data = {'code': status.HTTP_200_OK, 'message': 'selected appointments cancelled'}
@@ -136,7 +136,7 @@ def getAppointments(hospitalID, doctorID, date):
                                         patient_id=item.patient_id))
             if index == arrayLength - 1:  # this condition is added
                 appointments.append(
-                    dict(date=selectedDate.strftime(Utility.dateFormate), appointments=appointmentData))
+                    dict(date=selectedDate.strftime(Utility.date_format_DMY), appointments=appointmentData))
 
         json_data = {'code': status.HTTP_200_OK, 'message': 'success', 'data': appointments}
     except ObjectDoesNotExist:
@@ -218,7 +218,8 @@ def getDoctorProfileBy(hospitalID, doctorID, request):
                 'room_no': info.room_no if info.room_no is not None else '',
                 'degrees': info.doctor.degrees if info.doctor.degrees is not None else '',
                 'photo': request.build_absolute_uri(info.doctor.photo.url) if info.doctor.photo else '',
-                'specialization': specialization if specialization else ''
+                'specialization': specialization if specialization else '',
+                'time_spent_per_patient': info.time_spent_per_patient if info.time_spent_per_patient is not None else 0
                 }
         json_data = {'code': status.HTTP_200_OK, 'message': 'success', 'data': data}
     except ObjectDoesNotExist:
@@ -232,7 +233,7 @@ def getDoctorProfileBy(hospitalID, doctorID, request):
 
 def updateDoctorProfileBy(hospitalID, doctorID, name,
                           degrees, visitFee, roomNo,
-                          maxPatientPerDay, specializationID,
+                          time_spent_per_patient, specializationID,
                           specialization, photo):
     json_data = {}
     try:
@@ -242,7 +243,8 @@ def updateDoctorProfileBy(hospitalID, doctorID, name,
             if doctorData.photo:
                 Utility.removeFile(doctorData.photo.path)
             doctorData.photo = Utility.convertBase64ToImageFile(photo, id=doctorID)
-
+        if time_spent_per_patient is not None:
+            hospitalDoctor.time_spent_per_patient = time_spent_per_patient
         if name is not None and name != '':
             doctorData.name = name;
         if degrees is not None and degrees != '':
@@ -449,9 +451,11 @@ def removeDoctorFromHospital(doctorID, hospitalID):
     return json_data
 
 
-def login(request, phone, password):
+def login(request):
     json_data = {}
     try:
+        phone = request.data['phone']
+        password = request.data['password']
         data = HospitalData.objects.get(phone=phone)
         json_data = {}
         if HashPassword.isValidPassword(password, data.password):
@@ -479,7 +483,7 @@ def createWeekList():
 
 
 def doctor_profile_completion_ratio(hospital_id,doctor_id):
-    rules = ['name','degree','schedule','max_patient']
+    rules = ['name','degree','schedule','time_spent_per_patient']
     match_status = 0
     doctor_info = DoctorData.objects.get(id=doctor_id)
     if doctor_info is not  None:

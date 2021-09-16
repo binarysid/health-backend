@@ -34,12 +34,10 @@ def CancelAppointment(request):
     json_data = HospitalService.cancelDoctorAppointment(hospitalID=hospitalID,doctorID=doctorID,date=date)
     return HttpResponse(json.dumps(json_data), content_type="application/json")
 
-@api_view(['POST'])
+@api_view(['GET'])
 def Login(request):
     # version = request.headers['version']
-    phone = request.POST.get('phone', None)
-    password = request.POST.get('password', None)
-    json_data = HospitalService.login(request=request,phone=phone, password=password)
+    json_data = HospitalService.login(request=request)
     return HttpResponse(json.dumps(json_data), content_type="application/json")
 
 @api_view(['POST'])
@@ -292,9 +290,9 @@ def UpdateDoctorProfile(request):
         degrees = request.POST.get('degrees')
         visitFee = request.POST.get('visit_fee')
         roomNo = request.POST.get('room_no')
-        maxPatientPerDay = request.POST.get('max_patient_per_day')
-        if maxPatientPerDay is not None and maxPatientPerDay != '':
-            maxPatientPerDay = int(maxPatientPerDay)
+        time_spent_per_patient = request.POST.get('time_spent_per_patient')
+        if time_spent_per_patient is not None and time_spent_per_patient != '':
+            time_spent_per_patient = int(time_spent_per_patient)
         specializationID = request.POST.get('specialization_id')
         if specializationID is not None and specializationID != '':
             specializationID = int(specializationID)
@@ -302,7 +300,7 @@ def UpdateDoctorProfile(request):
         photo = request.POST.get('photo',None)
         json_data = HospitalService.updateDoctorProfileBy(hospitalID, doctorID,
                                                                    name,degrees,visitFee,
-                                                                   roomNo,maxPatientPerDay,
+                                                                   roomNo,time_spent_per_patient,
                                                                    specializationID,specialization,photo)
     except Exception as e:
         ExceptionLogger.track(e=e)
