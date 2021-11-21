@@ -1,6 +1,5 @@
 # Django #
 
-HealthBackendProject/DBCredentials.py
 tmp/
 passenger_wsgi.py
 *.log
